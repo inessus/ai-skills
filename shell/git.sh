@@ -11,3 +11,6 @@
 6.Finally, force update your repository
    git push -f origin master
 
+
+
+
