@@ -26,7 +26,14 @@ checkpoint_iter = 4000
 checkpoint = None
 
 
-def maskNLLLoss(inp, target, mask):
+def maskNLLLoss(inp, target, mask): # (B, O),(B),(B) =>(64, 7826) (64) (64)
+    """
+
+    :param inp:
+    :param target:
+    :param mask:
+    :return:
+    """
     nTotal = mask.sum()
     crossEntropy = -torch.log(torch.gather(inp, 1, target.view(-1, 1)))
     loss = crossEntropy.masked_select(mask).mean()
@@ -36,6 +43,23 @@ def maskNLLLoss(inp, target, mask):
 
 def train(input_variable, lengths, target_variable, mask, max_target_len, encoder, decoder, embedding,
           encoder_optimizer, decoder_optimizer, batch_size, clip, max_length=MAX_LENGTH):
+    """
+
+    :param input_variable:
+    :param lengths:
+    :param target_variable:
+    :param mask:
+    :param max_target_len:
+    :param encoder:
+    :param decoder:
+    :param embedding:
+    :param encoder_optimizer:
+    :param decoder_optimizer:
+    :param batch_size:
+    :param clip:
+    :param max_length:
+    :return:
+    """
     # Zero gradients
     encoder_optimizer.zero_grad()
     decoder_optimizer.zero_grad()
@@ -66,14 +90,14 @@ def train(input_variable, lengths, target_variable, mask, max_target_len, encode
 
     # Forward batch of sequences through decoder one time step at a time
     if use_teacher_forcing:
-        for t in range(max_target_len):
+        for t in range(max_target_len): # T
             decoder_output, decoder_hidden = decoder(
                 decoder_input, decoder_hidden, encoder_outputs
             ) # (B, 7826) (L, B, N) (64, 7826)(2, 64, 500)
             # Teacher forcing: next input is current target
-            decoder_input = target_variable[t].view(1, -1)
+            decoder_input = target_variable[t].view(1, -1) # 1, B (1, 64)
             # Calculate and accumulate loss
-            mask_loss, nTotal = maskNLLLoss(decoder_output, target_variable[t], mask[t])
+            mask_loss, nTotal = maskNLLLoss(decoder_output, target_variable[t], mask[t]) # (B, 7826) (B)
             loss += mask_loss
             print_losses.append(mask_loss.item() * nTotal)
             n_totals += nTotal
@@ -109,6 +133,28 @@ def train(input_variable, lengths, target_variable, mask, max_target_len, encode
 def trainIters(model_name, voc, pairs, encoder, decoder, encoder_optimizer, decoder_optimizer, embedding,
                encoder_n_layers, decoder_n_layers, save_dir, n_iteration, batch_size, print_every, save_every, clip,
                corpus_name, loadFilename):
+    """
+
+    :param model_name:
+    :param voc:
+    :param pairs:
+    :param encoder:
+    :param decoder:
+    :param encoder_optimizer:
+    :param decoder_optimizer:
+    :param embedding:
+    :param encoder_n_layers:
+    :param decoder_n_layers:
+    :param save_dir:
+    :param n_iteration:
+    :param batch_size:
+    :param print_every:
+    :param save_every:
+    :param clip:
+    :param corpus_name:
+    :param loadFilename:
+    :return:
+    """
     # Load batches for each iteration
     training_batches = [batch2TrainData(voc, [random.choice(pairs) for _ in range(batch_size)])
                         for _ in range(n_iteration)] # longest, batch_size = 10, 64
@@ -159,6 +205,16 @@ def trainIters(model_name, voc, pairs, encoder, decoder, encoder_optimizer, deco
 
 
 def evaluate(encoder, decoder, searcher, voc, sentence, max_length=MAX_LENGTH):
+    """
+
+    :param encoder:
+    :param decoder:
+    :param searcher:
+    :param voc:
+    :param sentence:
+    :param max_length:
+    :return:
+    """
     # Format input sentence as a batch
     # words -> indexes
     indexes_batch = [indexesFromSentence(voc, sentence)]
@@ -177,6 +233,14 @@ def evaluate(encoder, decoder, searcher, voc, sentence, max_length=MAX_LENGTH):
 
 
 def evaluateInput(encoder, decoder, searcher, voc):
+    """
+
+    :param encoder:
+    :param decoder:
+    :param searcher:
+    :param voc:
+    :return:
+    """
     input_sentence = ''
     while (1):
         try:

@@ -60,6 +60,15 @@ class LuongAttnDecoderRNN(nn.Module):
     """
 
     def __init__(self, attn_model, embedding, hidden_size, output_size, n_layers=1, dropout=0.1):
+        """
+
+        :param attn_model:
+        :param embedding:
+        :param hidden_size:
+        :param output_size:
+        :param n_layers:
+        :param dropout:
+        """
         super(LuongAttnDecoderRNN, self).__init__()
 
         # Keep for reference
@@ -115,6 +124,13 @@ class GreedySearchDecoder(nn.Module):
         self.decoder = decoder
 
     def forward(self, input_seq, input_length, max_length):
+        """
+
+        :param input_seq:
+        :param input_length:
+        :param max_length:
+        :return:
+        """
         # Forward input through encoder model
         encoder_outputs, encoder_hidden = self.encoder(input_seq, input_length)
         # Prepare encoder's final hidden layer to be first hidden input to the decoder
