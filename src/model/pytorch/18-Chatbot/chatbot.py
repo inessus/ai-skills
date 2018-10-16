@@ -145,7 +145,6 @@ if __name__ == '__main__':
     decoder = decoder.to(device)
     print('Models built and ready to go!')
 
-
     # Ensure dropout layers are in train mode
     encoder.train()
     decoder.train()
