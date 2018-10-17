@@ -13,6 +13,7 @@ import torch.multiprocessing as mp
 # Batching functions
 def coll_fn(data):
     """
+        (callable, optional): merges a list of samples to form a mini-batch.
         拆包，压成一维，滤0，判优，打包
     :param data:
     :return:
@@ -293,8 +294,8 @@ def batchify_fn_extract_ff(pad, data, cuda=True):
 def _batch2q(loader, prepro, q, single_run=True):
     """
         分批数据转换成队列的伺服进程，用途提高数据处理效率， 先装数据，后装批次
-    :param loader: 数据装载器，加载数据
-    :param prepro: 预处理函数
+    :param loader: 数据装载器，加载数据 DataLoader(coll_fn)
+    :param prepro: 预处理函数         prepro_fn
     :param q:  进程共享队列， 用于存放批次数据
     :param single_run: 是否只运行一次？
     :return:
@@ -324,7 +325,7 @@ class BucketedGenerater(object):
         :param queue_size: 桶生成器的大小尺寸
         :param fork:   桶生成器是否需要格外的进程保障
         """
-        self._loader = loader
+        self._loader = loader  # DataLoader
         self._prepro = prepro  # prepro_fn
         self._sort_key = sort_key
         self._batchify = batchify
@@ -345,6 +346,11 @@ class BucketedGenerater(object):
 
     def __call__(self, batch_size: int):
         def get_batches(hyper_batch):
+            """
+                主要实现超级ｂａｔｃｈ功能
+            :param hyper_batch:
+            :return:
+            """
             indexes = list(range(0, len(hyper_batch), batch_size))
             if not self._single_run:
                 # random shuffle for training batches
