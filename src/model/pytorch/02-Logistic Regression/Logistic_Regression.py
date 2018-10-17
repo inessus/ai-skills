@@ -1,4 +1,3 @@
-__author__ = 'SherlockLiao'
 
 import torch
 from torch import nn, optim
@@ -8,6 +7,8 @@ from torch.utils.data import DataLoader
 from torchvision import transforms
 from torchvision import datasets
 import time
+
+
 # 定义超参数
 batch_size = 32
 learning_rate = 1e-3
