@@ -162,20 +162,21 @@ if __name__ == '__main__':
     # Run training iterations
     print("Starting Training!")
 
-    if os.path.exists(os.path.join(corpus, 'encoder.dict')) and os.path.exists(os.path.join(corpus, 'decoder.dict')):
-        encoder.load_state_dict(os.path.join(corpus, 'encoder.dict'))
-        decoder.load_state_dict(os.path.join(corpus, 'decoder.dict'))
+    if os.path.exists(os.path.join(corpus, 'encoder.pth')) and os.path.exists(os.path.join(corpus, 'decoder.pth')):
+        encoder.load_state_dict(torch.load(os.path.join(corpus, 'encoder.pth')))
+        decoder.load_state_dict(torch.load(os.path.join(corpus, 'decoder.pth')))
     else:
         trainIters(model_name, voc, pairs, encoder, decoder, encoder_optimizer, decoder_optimizer,
                embedding, encoder_n_layers, decoder_n_layers, save_dir, n_iteration, batch_size,
                print_every, save_every, clip, corpus_name, loadFilename)
 
+        torch.save(encoder.state_dict(), os.path.join(corpus, 'encoder.pth'))
+        torch.save(decoder.state_dict(), os.path.join(corpus, 'decoder.pth'))
     # Set dropout layers to eval mode
     encoder.eval()
     decoder.eval()
 
-    torch.save(encoder.state_dict(), os.path.join(corpus, 'encoder.dict'))
-    torch.save(decoder.state_dict(), os.path.join(corpus, 'decoder.dict'))
+
     # Initialize search module
     searcher = GreedySearchDecoder(encoder, decoder)
 
