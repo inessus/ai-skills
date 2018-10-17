@@ -1,32 +1,15 @@
 """ pretrain a word2vec on the corpus"""
 import argparse
-<<<<<<< HEAD
 import json
 import logging
 import os
-=======
-import codecs
-import json
-import logging
-import os
-import pickle as pkl
-import platform
-from collections import Counter
->>>>>>> a6c58ab3456443573d54820cd38bc860739e28c8
 from datetime import timedelta
 from os.path import exists, join
 from time import time
 
 import gensim
-<<<<<<< HEAD
 from cytoolz import concatv
 
-=======
-import pandas as pd
-from cytoolz import concatv
-
-from utils import count_data
->>>>>>> a6c58ab3456443573d54820cd38bc860739e28c8
 from data.data import JsonFileDataset
 
 
@@ -45,8 +28,7 @@ class Sentences(object):
 
 
 def main(args):
-    logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s',
-                        level=logging.INFO)
+    logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
     start = time()
 
     dataset = JsonFileDataset('train', 'cnndm', args.path)
@@ -56,31 +38,20 @@ def main(args):
         os.makedirs(save_dir)
 
     sentences = Sentences(dataset)
-    model = gensim.models.Word2Vec(
-        size=args.dim, min_count=5, workers=16, sg=1)
+    model = gensim.models.Word2Vec(size=args.dim, min_count=5, workers=16, sg=1)
     model.build_vocab(sentences)
     print('vocab built in {}'.format(timedelta(seconds=time()-start)))
     model.train(sentences, total_examples=model.corpus_count, epochs=model.iter)
 
-    model.save(join(save_dir, 'word2vec.{}d.{}k.bin'.format(
-        args.dim, len(model.wv.vocab)//1000)))
-    model.wv.save_word2vec_format(join(
-        save_dir,
-        'word2vec.{}d.{}k.w2v'.format(args.dim, len(model.wv.vocab)//1000)
-    ))
+    model.save(join(save_dir, 'word2vec.{}d.{}k.bin'.format(args.dim, len(model.wv.vocab)//1000)))
+    model.wv.save_word2vec_format(join(save_dir, 'word2vec.{}d.{}k.w2v'.format(args.dim, len(model.wv.vocab)//1000)))
 
     print('word2vec trained in {}'.format(timedelta(seconds=time()-start)))
     return model
 
 
 if __name__ == '__main__':
-<<<<<<< HEAD
     parser = argparse.ArgumentParser(description='train word2vec embedding used for model initialization')
-=======
-    parser = argparse.ArgumentParser(
-        description='train word2vec embedding used for model initialization'
-    )
->>>>>>> a6c58ab3456443573d54820cd38bc860739e28c8
     parser.add_argument('--path', required=True, help='root of the model')
     parser.add_argument('--dim', action='store', type=int, default=128)
     args = parser.parse_args()

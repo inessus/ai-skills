@@ -23,7 +23,7 @@ from data.prepare import printLines, fileFilter, loadLines, \
 from model.seq2seq import LuongAttnDecoderRNN, GreedySearchDecoder, EncoderRNN
 from model.trainer import trainIters, \
     learning_rate,decoder_learning_ratio, n_iteration, \
-    print_every, save_every, clip
+    print_every, save_every, clip, evaluate, evaluateInput
 
 
 def extract_data(corpus, datafile):
@@ -171,9 +171,10 @@ if __name__ == '__main__':
     searcher = GreedySearchDecoder(encoder, decoder)
 
     # Begin chatting (uncomment and run the following line to begin)
-    # evaluateInput(encoder, decoder, searcher, voc)
+    evaluateInput(encoder, decoder, searcher, voc)
 
-
+    while True:
+        print("input")
     # T is the max time steps,
     # B is the batch size
     # N is the hidden size

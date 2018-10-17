@@ -23,11 +23,12 @@ START = 2
 END = 3
 
 
-# 建立字典 去掉次常用字
 def make_vocab(wc, vocab_size):
     """
-        wc 输入是所有单词的统计计数
-        vocab_size 字典大小
+        建立字典
+    :param wc:
+    :param vocab_size:
+    :return:
     """
     word2id, id2word = {}, {}
     word2id['<pad>'] = PAD
