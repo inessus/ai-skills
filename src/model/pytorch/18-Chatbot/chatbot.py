@@ -78,6 +78,8 @@ if __name__ == '__main__':
     # Load/Assemble voc and pairs
     save_dir = os.path.join("data", "save")
     voc, pairs = loadPrepareData(corpus, corpus_name, datafile, save_dir)
+
+
     # Print some pairs to validate
     print("\npairs:")
     for pair in pairs[:10]:
@@ -159,7 +161,12 @@ if __name__ == '__main__':
 
     # Run training iterations
     print("Starting Training!")
-    trainIters(model_name, voc, pairs, encoder, decoder, encoder_optimizer, decoder_optimizer,
+
+    if os.path.exists(os.path.join(corpus, 'encoder.dict')) and os.path.exists(os.path.join(corpus, 'decoder.dict')):
+        encoder.load_state_dict(os.path.join(corpus, 'encoder.dict'))
+        decoder.load_state_dict(os.path.join(corpus, 'decoder.dict'))
+    else:
+        trainIters(model_name, voc, pairs, encoder, decoder, encoder_optimizer, decoder_optimizer,
                embedding, encoder_n_layers, decoder_n_layers, save_dir, n_iteration, batch_size,
                print_every, save_every, clip, corpus_name, loadFilename)
 
@@ -167,6 +174,8 @@ if __name__ == '__main__':
     encoder.eval()
     decoder.eval()
 
+    torch.save(encoder.state_dict(), os.path.join(corpus, 'encoder.dict'))
+    torch.save(decoder.state_dict(), os.path.join(corpus, 'decoder.dict'))
     # Initialize search module
     searcher = GreedySearchDecoder(encoder, decoder)
 

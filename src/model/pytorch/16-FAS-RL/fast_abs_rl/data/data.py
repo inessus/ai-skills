@@ -15,11 +15,7 @@ class JsonFileDataset(Dataset):
         val   验证数据 文件名[0-9]+.json 数字按顺序依次递增
         test  测试数据 文件名[0-9]+.json 数字按顺序依次递增
     """
-<<<<<<< HEAD
     def __init__(self, split: str, datetype: str='cnndm', path: str=None) -> None:
-=======
-    def __init__(self, split: str, datetype: str, path: str=None) -> None:
->>>>>>> f0bd9a5b01fe49a55f538ece70dac34e89887f1f
         assert split in ['train', 'val', 'test']
         assert datetype in ['bytecup2018', 'cnndm']
 
@@ -52,30 +48,21 @@ class JsonFileDataset(Dataset):
         return js
 
     def count_json(self, path):
-<<<<<<< HEAD
         """
             计算json文件个数
             count number of data in the given path
         """
-=======
-        """ count number of data in the given path"""
->>>>>>> f0bd9a5b01fe49a55f538ece70dac34e89887f1f
         matcher = re.compile(r'[0-9]+\.json')
         match = lambda name: bool(matcher.match(name))
         names = os.listdir(path)
         n_data = len(list(filter(match, names)))
         return n_data
 
-<<<<<<< HEAD
     def count_txt(self, path):
         """
             计算txt文件个数
             count number of data in the given path
         """
-=======
-    def count_text(self, path):
-        """ count number of data in the given path"""
->>>>>>> f0bd9a5b01fe49a55f538ece70dac34e89887f1f
         matcher = re.compile(r'.*[0-9]+\.txt')
         match = lambda name: bool(matcher.match(name))
         names = os.listdir(path)
@@ -83,8 +70,6 @@ class JsonFileDataset(Dataset):
         return n_data
 
 
-<<<<<<< HEAD
-=======
 class Dictionary(object):
     def __init__(self):
 
@@ -100,4 +85,3 @@ class Dictionary(object):
 
     def __len__(self):
         return len(self.word2idx)
->>>>>>> f0bd9a5b01fe49a55f538ece70dac34e89887f1f
