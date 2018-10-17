@@ -28,7 +28,7 @@ checkpoint = None
 
 def maskNLLLoss(inp, target, mask): # (B, O),(B),(B) =>(64, 7826) (64) (64)
     """
-
+        target指示秋香的位置，gather是点秋香
     :param inp:
     :param target:
     :param mask:
@@ -79,8 +79,8 @@ def train(input_variable, lengths, target_variable, mask, max_target_len, encode
     encoder_outputs, encoder_hidden = encoder(input_variable, lengths) # (T, B, N)  (2*L, B, N)(10, 64, 500)
 
     # Create initial decoder input (start with SOS tokens for each sentence)
-    decoder_input = torch.LongTensor([[SOS_token for _ in range(batch_size)]])
-    decoder_input = decoder_input.to(device) # L, B
+    decoder_input = torch.LongTensor([[SOS_token for _ in range(batch_size)]]) #(1, B) (1,54)
+    decoder_input = decoder_input.to(device) # 1, B
 
     # Set initial decoder hidden state to the encoder's final hidden state
     decoder_hidden = encoder_hidden[:decoder.n_layers]  # (L, B, N)

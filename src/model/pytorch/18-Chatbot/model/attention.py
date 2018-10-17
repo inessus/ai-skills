@@ -27,9 +27,9 @@ class Attn(torch.nn.Module):
 
     def dot_score(self, hidden, encoder_output):
         """
-
-        :param hidden:
-        :param encoder_output:
+            输出维度是最大的那个，本质上是一个小向量向大向量的广播
+        :param hidden: 1*B*N  解码器循环网络的输出
+        :param encoder_output: L*B*N 编码器循环网络的输出
         :return:
         """
         return torch.sum(hidden * encoder_output, dim=2)
@@ -66,8 +66,8 @@ class Attn(torch.nn.Module):
             attn_energies = self.general_score(hidden, encoder_outputs)
         elif self.method == 'concat':
             attn_energies = self.concat_score(hidden, encoder_outputs)
-        elif self.method == 'dot': # (1, B, N) (T,B,N)   (1,64, 500)*(10, 64, 500)
-            attn_energies = self.dot_score(hidden, encoder_outputs) # (T, B)
+        elif self.method == 'dot': # (1*B*N) (T*B*N)   (1*64*500)*(10*64*500)
+            attn_energies = self.dot_score(hidden, encoder_outputs) # (T*B)
 
         # Transpose max_length and batch_size dimensions
         attn_energies = attn_energies.t() # B, T

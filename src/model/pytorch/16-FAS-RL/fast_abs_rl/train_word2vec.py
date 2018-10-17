@@ -1,21 +1,15 @@
 """ pretrain a word2vec on the corpus"""
 import argparse
-import codecs
 import json
 import logging
 import os
-import pickle as pkl
-import platform
-from collections import Counter
 from datetime import timedelta
 from os.path import exists, join
 from time import time
 
 import gensim
-import pandas as pd
 from cytoolz import concatv
 
-from utils import count_data
 from data.data import JsonFileDataset
 
 
@@ -63,9 +57,7 @@ def main(args):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(
-        description='train word2vec embedding used for model initialization'
-    )
+    parser = argparse.ArgumentParser(description='train word2vec embedding used for model initialization')
     parser.add_argument('--path', required=True, help='root of the model')
     parser.add_argument('--dim', action='store', type=int, default=128)
     args = parser.parse_args()
