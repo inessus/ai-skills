@@ -325,9 +325,15 @@ class BucketedGenerater(object):
         :param fork:   桶生成器是否需要格外的进程保障
         """
         self._loader = loader
-        self._prepro = prepro
+        self._prepro = prepro  # prepro_fn
         self._sort_key = sort_key
-        self._batchify = batchify  # batchify_fn_copy
+        self._batchify = batchify
+        """
+            batchify = compose(
+                batchify_fn_copy(PAD, START, END, cuda=cuda),   # 补码
+                convert_batch_copy(UNK, word2id)    # 向量化
+            )
+        """
         self._single_run = single_run
         if fork:
             ctx = mp.get_context('forkserver')

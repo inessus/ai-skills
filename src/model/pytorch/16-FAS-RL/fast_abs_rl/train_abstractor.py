@@ -225,6 +225,7 @@ if __name__ == '__main__':
     main(args)
 
     """
+    --path=/Users/oneai/ai/data/cnndm --w2v=/Users/oneai/ai/data/cnndm/word2vec/word2vec.128d.226k.bin --debug
     CopySumm:
         embedding: Embedding(30004, 128, padding_idx=0)
         _enc_lstm: LSTM(128, 256, bidirectional=True)

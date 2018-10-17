@@ -34,7 +34,7 @@ class JsonFileDataset(Dataset):
         self.FILE_PRE = '{}.json'
         self.split = split
 
-    def __len__(self) -> int:
+    def __len__(self) -> int: # 必须相应，否则批处理器，不知道加载多少
         return self._n_data
 
     # def __getitem__(self, i: int):

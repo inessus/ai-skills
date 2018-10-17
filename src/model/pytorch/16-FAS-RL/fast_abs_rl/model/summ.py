@@ -158,7 +158,7 @@ class Seq2SeqSumm(nn.Module):
 
     def set_embedding(self, embedding):
         """
-
+            使用word2vec，等替换嵌入层
         embedding is the weight matrix
         :param embedding:
         :return:

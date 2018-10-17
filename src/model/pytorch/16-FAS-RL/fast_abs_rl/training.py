@@ -110,7 +110,7 @@ class BasicPipeline(object):
 
         self._n_epoch = 0  # epoch not very useful?
         self._batch_size = batch_size
-        self._batches = self.batches()
+        self._batches = self.batches() # 批处理器，开始调用
 
     def batches(self):
         while True:
