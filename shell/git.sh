@@ -10,3 +10,7 @@
    git branch -m master
 6.Finally, force update your repository
    git push -f origin master
+
+
+7. remove the history file
+    git filter-branch --force --index-filter 'git rm --cached --ignore-unmatch src/.idea/workspace.xml' --prune-empty --tag-name-filter cat -- --all
