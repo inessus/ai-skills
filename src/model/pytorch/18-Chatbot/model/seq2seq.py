@@ -98,18 +98,18 @@ class LuongAttnDecoderRNN(nn.Module):
         # Note: we run this one step (word) at a time
         # Get embedding of current input word
         embedded = self.embedding(input_step)
-        embedded = self.embedding_dropout(embedded) # (1, B, N) (1, 64, 500)
+        embedded = self.embedding_dropout(embedded) # (1*B*N) (1*64*500)
         # Forward through unidirectional GRU
-        rnn_output, hidden = self.gru(embedded, last_hidden) # (B, N) (L, B, N) (64, 500)(2, 64, 500)
+        rnn_output, hidden = self.gru(embedded, last_hidden) # (B*N) (L*B*N) (64*500)(2*64*500)
         # Calculate attention weights from the current GRU output
-        attn_weights = self.attn(rnn_output, encoder_outputs) # B, 1, T (64, 1, 10)
+        attn_weights = self.attn(rnn_output, encoder_outputs) # B*1*T (64*1*10)
         # Multiply attention weights to encoder outputs to get new "weighted sum" context vector
         context = attn_weights.bmm(encoder_outputs.transpose(0, 1))
         # Concatenate weighted context vector and GRU output using Luong eq. 5
         rnn_output = rnn_output.squeeze(0)
         context = context.squeeze(1)
-        concat_input = torch.cat((rnn_output, context), 1)
-        concat_output = torch.tanh(self.concat(concat_input))
+        concat_input = torch.cat((rnn_output, context), 1) # (B*(2*N)) (64*1000)
+        concat_output = torch.tanh(self.concat(concat_input)) # B,N, (64*500)
         # Predict next word using Luong eq. 6
         output = self.out(concat_output)
         output = F.softmax(output, dim=1)
