@@ -14,37 +14,37 @@ INIT = 1e-2
 class Seq2SeqSumm(nn.Module):
     def __init__(self, vocab_size, emb_dim, n_hidden, bidirectional, n_layer, dropout=0.0):
         """
-        :param vocab_size:  字典大小
-        :param emb_dim: 嵌入尺寸
-        :param n_hidden: 隐藏层大小
+        :param vocab_size:  字典大小 V
+        :param emb_dim: 嵌入尺寸  E
+        :param n_hidden: 隐藏层大小 N
         :param bidirectional: 是否双向
-        :param n_layer: 层数
+        :param n_layer: 层数 L
         :param dropout: dropout层参数
         """
         super().__init__()
         # embedding weight parameter is shared between encoder, decoder,
         # and used as final projection layer to vocab logit
         # can initialize with pretrained word vectors
-        self._embedding = nn.Embedding(vocab_size, emb_dim, padding_idx=0)  # (80000, 128)
-        self._enc_lstm = nn.LSTM(emb_dim, n_hidden, n_layer, bidirectional=bidirectional, dropout=dropout)  # (128, 256, 1)
+        self._embedding = nn.Embedding(vocab_size, emb_dim, padding_idx=0)  # (V, E)
+        self._enc_lstm = nn.LSTM(emb_dim, n_hidden, n_layer, bidirectional=bidirectional, dropout=dropout)  # (128*256*1)
 
         # initial encoder LSTM states are learned parameters
         state_layer = n_layer * (2 if bidirectional else 1)
-        self._init_enc_h = nn.Parameter(torch.Tensor(state_layer, n_hidden))    # (128, 256)
-        self._init_enc_c = nn.Parameter(torch.Tensor(state_layer, n_hidden))    # (128, 256)
+        self._init_enc_h = nn.Parameter(torch.Tensor(state_layer, n_hidden))    # ((2*L)*N) (2*256)
+        self._init_enc_c = nn.Parameter(torch.Tensor(state_layer, n_hidden))    # ((2*L)*N) (2*256)
         init.uniform_(self._init_enc_h, -INIT, INIT)
         init.uniform_(self._init_enc_c, -INIT, INIT)
 
         # vanillat lstm / LNlstm
-        self._dec_lstm = MultiLayerLSTMCells(2*emb_dim, n_hidden, n_layer, dropout=dropout) # (2*128, 256, 1)
+        self._dec_lstm = MultiLayerLSTMCells(2*emb_dim, n_hidden, n_layer, dropout=dropout) # (2*E,N,L)(2*128, 256, 1)
 
         # project encoder final states to decoder initial states
-        enc_out_dim = n_hidden * (2 if bidirectional else 1)
-        self._dec_h = nn.Linear(enc_out_dim, n_hidden, bias=False)  # (128, 256)
-        self._dec_c = nn.Linear(enc_out_dim, n_hidden, bias=False)  # (128, 256)
+        enc_out_dim = n_hidden * (2 if bidirectional else 1) # (2*N)
+        self._dec_h = nn.Linear(enc_out_dim, n_hidden, bias=False)  # (2*N, N) (512, 256)
+        self._dec_c = nn.Linear(enc_out_dim, n_hidden, bias=False)  # (2*N, N) (512, 256)
 
         # multiplicative attention
-        self._attn_wm = nn.Parameter(torch.Tensor(enc_out_dim, n_hidden))   # (256, 256)
+        self._attn_wm = nn.Parameter(torch.Tensor(enc_out_dim, n_hidden))   # (512, 256)
         self._attn_wq = nn.Parameter(torch.Tensor(n_hidden, n_hidden))      # (256, 256)
         init.xavier_normal_(self._attn_wm)
         init.xavier_normal_(self._attn_wq)
@@ -52,7 +52,7 @@ class Seq2SeqSumm(nn.Module):
         # project decoder output to emb_dim, then
         # apply weight matrix from embedding layer
         self._projection = nn.Sequential(
-            nn.Linear(2*n_hidden, n_hidden),            # (2*128, 256)
+            nn.Linear(2*n_hidden, n_hidden),            # (2*256, 256)
             nn.Tanh(),
             nn.Linear(n_hidden, emb_dim, bias=False)    # (256, 128)
         )
@@ -63,12 +63,12 @@ class Seq2SeqSumm(nn.Module):
         )
 
     def forward(self, article, art_lens, abstract):
-        # [128, 32, 256], ( [(1, 128, 256),(1, 128, 256)],(256, 128))
+        # [128*32*256], ( [(1*128*256),(1*128*256)],(256*128))
         attention, init_dec_states = self.encode(article, art_lens)
 
         mask = len_mask(art_lens, attention.device).unsqueeze(-2)
 
-        # ([128, 32, 256], (XXXXXX)), ( [(1, 128, 256),(1, 128, 256)],(256, 128)) , (32, 128)
+        # ([128*32*256], (XXXXXX)), ( [(1*128*256),(1*128*256)],(256*128)) , (32*128)
         logit = self._decoder((attention, mask), init_dec_states, abstract)
         return logit
 
@@ -170,10 +170,10 @@ class Seq2SeqSumm(nn.Module):
 class AttentionalLSTMDecoder(object):
     def __init__(self, embedding, lstm, attn_w, projection):
         """
-        :param embedding:  # (80000, 128)
-        :param lstm: (2*128, 128, 1)
-        :param attn_w: (128, 256)
-        :param projection: (2*128, 256) * (256, 128)
+        :param embedding:  # (30004, 128)
+        :param lstm: (256, 256, 1)
+        :param attn_w: (256, 256)
+        :param projection: [521, 256]=>[256, 128]
         """
         super().__init__()
         self._embedding = embedding

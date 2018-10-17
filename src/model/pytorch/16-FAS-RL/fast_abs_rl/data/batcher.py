@@ -68,9 +68,9 @@ def conver2id(unk, word2id, words_list):
 def prepro_fn(max_src_len, max_tgt_len, batch):
     """
         对原始数据进行预处理，进行并发执行（拆包、截断X,Y的长度tokenize、打包）
-    :param max_src_len: 最大源长度
-    :param max_tgt_len: 最大目标长度
-    :param batch:   批次原始数据数据
+    :param max_src_len: 最大源长度 100
+    :param max_tgt_len: 最大目标长度 30
+    :param batch:   批次原始数据数据 (23126*[****], 23126*[*****])
     :return:
     """
     sources, targets = batch
@@ -327,7 +327,7 @@ class BucketedGenerater(object):
         self._loader = loader
         self._prepro = prepro
         self._sort_key = sort_key
-        self._batchify = batchify
+        self._batchify = batchify  # batchify_fn_copy
         self._single_run = single_run
         if fork:
             ctx = mp.get_context('forkserver')

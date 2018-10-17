@@ -59,6 +59,12 @@ class LSTMEncoder(nn.Module):
                              dropout=dropout, bidirectional=bidirectional)
 
     def forward(self, input_, in_lens=None):
+        """
+
+        :param input_:
+        :param in_lens:
+        :return:
+        """
         """ [batch_size, max_num_sent, input_dim] Tensor"""
         size = (self._init_h.size(0), input_.size(0), self._init_h.size(1))
         init_states = (self._init_h.unsqueeze(1).expand(*size),

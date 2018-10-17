@@ -61,11 +61,11 @@ def configure_net(vocab_size, emb_dim, n_hidden, bidirectional, n_layer):
     """
 
     net_args = {
-        'vocab_size': vocab_size,
-        'emb_dim': emb_dim,
-        'n_hidden': n_hidden,
-        'bidirectional': bidirectional,
-        'n_layer': n_layer
+        'vocab_size': vocab_size,   # W, 30004
+        'emb_dim': emb_dim,         # E, 128
+        'n_hidden': n_hidden,       # N, 256
+        'bidirectional': bidirectional, # true
+        'n_layer': n_layer          # L 1
     }
     net = CopySumm(**net_args)
     return net, net_args
@@ -142,7 +142,7 @@ def main(args):
     # batcher
     with open(join(DATA_DIR, 'vocab_cnt.pkl'), 'rb') as f:
         wc = pkl.load(f)
-    word2id = make_vocab(wc, args.vsize)
+    word2id = make_vocab(wc, args.vsize) # W 30000
     train_batcher, val_batcher = build_batchers(word2id, args.cuda, args.debug)
 
     # 生成CopyNet
@@ -221,4 +221,23 @@ if __name__ == '__main__':
     args.bi = not args.no_bi
     args.cuda = torch.cuda.is_available() and not args.no_cuda
 
+
     main(args)
+
+    """
+    CopySumm:
+        embedding: Embedding(30004, 128, padding_idx=0)
+        _enc_lstm: LSTM(128, 256, bidirectional=True)
+        _dec_lstm: 
+            MultiLayerLSTMCells
+                _cells: ModuleList((0): LSTMCell(256, 256))
+        _dec_h: Linear(in_features=512, out_features=256, bias=False)
+        _dec_c: Linear(in_features=512, out_features=256, bias=False)
+        _projection: 
+            Sequential:
+                (0): Linear(in_features=512, out_features=256, bias=True)
+                (1): Tanh()
+                (2): Linear(in_features=256, out_features=128, bias=False)
+        _copy: _CopyLinear()
+    
+    """

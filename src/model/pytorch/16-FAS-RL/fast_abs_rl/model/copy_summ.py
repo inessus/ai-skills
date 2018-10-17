@@ -16,9 +16,9 @@ class _CopyLinear(nn.Module):
     def __init__(self, context_dim, state_dim, input_dim, bias=True):
         """
 
-        :param context_dim:
-        :param state_dim:
-        :param input_dim:
+        :param context_dim: N 256
+        :param state_dim:   N 256
+        :param input_dim:   N 256
         :param bias:
         """
         super().__init__()
@@ -34,6 +34,13 @@ class _CopyLinear(nn.Module):
             self.regiser_module(None, '_b')
 
     def forward(self, context, state, input_):
+        """
+
+        :param context:
+        :param state:
+        :param input_:
+        :return:
+        """
         output = (torch.matmul(context, self._v_c.unsqueeze(1))
                   + torch.matmul(state, self._v_s.unsqueeze(1))
                   + torch.matmul(input_, self._v_i.unsqueeze(1)))
@@ -43,8 +50,7 @@ class _CopyLinear(nn.Module):
 
 
 class CopySumm(Seq2SeqSumm):
-    def __init__(self, vocab_size, emb_dim,
-                 n_hidden, bidirectional, n_layer, dropout=0.0):
+    def __init__(self, vocab_size, emb_dim, n_hidden, bidirectional, n_layer, dropout=0.0):
         """
 
         :param vocab_size:
@@ -62,6 +68,15 @@ class CopySumm(Seq2SeqSumm):
         )
 
     def forward(self, article, art_lens, abstract, extend_art, extend_vsize):
+        """
+
+        :param article: (B*T) (32*43)
+        :param art_lens:
+        :param abstract:
+        :param extend_art:
+        :param extend_vsize:
+        :return:
+        """
         attention, init_dec_states = self.encode(article, art_lens)
         mask = len_mask(art_lens, attention.device).unsqueeze(-2)
         logit = self._decoder(
