@@ -4,6 +4,11 @@ import json
 import os
 from os.path import join, exists
 import pickle as pkl
+<<<<<<< HEAD
+=======
+import platform
+
+>>>>>>> f0bd9a5b01fe49a55f538ece70dac34e89887f1f
 from cytoolz import compose
 
 import torch
@@ -196,7 +201,19 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='training of the abstractor (ML)')
     parser.add_argument('--path', required=True, help='模型根目录')
 
+<<<<<<< HEAD
     parser.add_argument('--vsize', type=int, action='store', default=30000, help='字典大小')
+=======
+<<<<<<< HEAD
+    parser.add_argument('--vsize', type=int, action='store', default=30000, help='字典大小')
+=======
+<<<<<<< HEAD
+    parser.add_argument('--vsize', type=int, action='store', default=80000, help='字典大小')
+=======
+    parser.add_argument('--vsize', type=int, action='store', default=30000, help='字典大小')
+>>>>>>> 4ea1f663ee6e652cc95a0830c027227b91c562f6
+>>>>>>> a6c58ab3456443573d54820cd38bc860739e28c8
+>>>>>>> f0bd9a5b01fe49a55f538ece70dac34e89887f1f
     parser.add_argument('--emb_dim', type=int, action='store', default=128, help='嵌入')
     parser.add_argument('--w2v', action='store', help='使用word2vec嵌入')
     parser.add_argument('--n_hidden', type=int, action='store', default=256, help='LSTM隐藏单元个数')
