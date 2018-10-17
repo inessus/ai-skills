@@ -106,5 +106,6 @@ venv.bak/
 =======
 
 src/.idea/*
+src/.idea/
 *.tar
 >>>>>>> a6c58ab3456443573d54820cd38bc860739e28c8
