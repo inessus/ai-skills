@@ -23,20 +23,10 @@ START = 2
 END = 3
 
 
-<<<<<<< HEAD
-def make_vocab(wc, vocab_size):
-    """
-        建立字典
-    :param wc:
-    :param vocab_size:
-    :return:
-=======
-# 建立字典 去掉次常用字
 def make_vocab(wc, vocab_size):
     """
         wc 输入是所有单词的统计计数
         vocab_size 字典大小
->>>>>>> f0bd9a5b01fe49a55f538ece70dac34e89887f1f
     """
     word2id, id2word = {}, {}
     word2id['<pad>'] = PAD
