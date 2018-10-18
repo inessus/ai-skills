@@ -34,7 +34,7 @@ def sequence_mean(sequence, seq_lens, dim=1):
 
 def sequence_loss(logits, targets, xent_fn=None, pad_idx=0):
     """ 
-        functional interface of SequenceLoss
+        损失函数计算了，默认使用交叉熵计算
         挑选序列，进行整理，计算商值
     """
     assert logits.size()[:-1] == targets.size()

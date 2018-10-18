@@ -101,21 +101,26 @@ def configure_training(opt, lr, clip_grad, lr_decay, batch_size):
 
 def build_batchers(word2id, cuda, debug):
     """
-
+        转配DataLoader BucketedGenerater
     :param word2id: 向量字典
     :param cuda: 是否使用cuda
     :param debug: 是否调试
     :return:
     """
-    prepro = prepro_fn(args.max_art, args.max_abs)  # token函数定义
+    prepro = prepro_fn(args.max_art, args.max_abs)  # 切分词，截断
 
     def sort_key(sample):
+        """
+            排序使用长度作为关键值
+        :param sample:
+        :return:
+        """
         src, target = sample
         return (len(target), len(src))
 
     batchify = compose(
         batchify_fn_copy(PAD, START, END, cuda=cuda),   # 补码
-        convert_batch_copy(UNK, word2id)    # 向量化
+        convert_batch_copy(UNK, word2id)                # 向量化
     )
 
     train_loader = DataLoader(
@@ -139,7 +144,7 @@ def build_batchers(word2id, cuda, debug):
 
 def main(args):
     # create data batcher, vocabulary
-    # batcher
+    # batcher 字典，在整理数据的时候生成的词频字典
     with open(join(DATA_DIR, 'vocab_cnt.pkl'), 'rb') as f:
         wc = pkl.load(f)
     word2id = make_vocab(wc, args.vsize) # W 30000
@@ -213,7 +218,7 @@ if __name__ == '__main__':
     parser.add_argument('--clip', type=float, action='store', default=2.0, help='梯度裁剪最大值')
     parser.add_argument('--batch', type=int, action='store', default=32, help='批量尺寸')
     parser.add_argument('--ckpt_freq', type=int, action='store', default=3000, help='断点和验证的大小')
-    parser.add_argument('--patience', type=int, action='store', default=5, help='patience for early stopping')
+    parser.add_argument('--patience', type=int, action='store', default=5, help='停止条件')
 
     parser.add_argument('--debug', action='store_true', help='运行debug模式，禁止进程创建')
     parser.add_argument('--no-cuda', action='store_true', help='禁止GPU训练')

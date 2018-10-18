@@ -25,6 +25,7 @@ END = 3
 
 def make_vocab(wc, vocab_size):
     """
+        根据词频字典构建规定大小的 word2id
         wc 输入是所有单词的统计计数
         vocab_size 字典大小
     """

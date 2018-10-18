@@ -234,7 +234,7 @@ if __name__ == '__main__':
     parser.add_argument('--clip', type=float, action='store', default=2.0, help='gradient clipping')
     parser.add_argument('--batch', type=int, action='store', default=32, help='the training batch size')
     parser.add_argument('--ckpt_freq', type=int, action='store', default=1000, help='number of update steps for checkpoint and validation')
-    parser.add_argument('--patience', type=int, action='store', default=3, help='patience for early stopping')
+    parser.add_argument('--patience', type=int, action='store', default=3, help='停止条件')
     parser.add_argument('--no-cuda', action='store_true', help='disable GPU training')
     args = parser.parse_args()
     args.cuda = torch.cuda.is_available() and not args.no_cuda

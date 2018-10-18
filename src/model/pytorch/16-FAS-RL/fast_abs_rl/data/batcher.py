@@ -45,7 +45,7 @@ def coll_fn_extract(data):
 @curry
 def tokenize(max_len, texts):
     """
-        文章》句子》单词  把文章tokenize成指定位数的单词向量
+        切分词  文章》句子》单词  把文章tokenize成指定位数的单词向量
     :param max_len: 单词最大个数
     :param texts:  文章输入
     :return: 指定维数的单词向量
@@ -61,14 +61,14 @@ def conver2id(unk, word2id, words_list):
     :param words_list:
     :return:
     """
-    word2id = defaultdict(lambda: unk, word2id) # 没看出作用来
+    word2id = defaultdict(lambda: unk, word2id) # 超纲词全部是0
     return [[word2id[w] for w in words] for words in words_list]
 
 
 @curry
 def prepro_fn(max_src_len, max_tgt_len, batch):
     """
-        对原始数据进行预处理，进行并发执行（拆包、截断X,Y的长度tokenize、打包）
+        对原始数据进行预处理，切分词，截断
     :param max_src_len: 最大源长度 100
     :param max_tgt_len: 最大目标长度 30
     :param batch:   批次原始数据数据 (23126*[****], 23126*[*****])
@@ -123,7 +123,7 @@ def convert_batch(unk, word2id, batch):
 def convert_batch_copy(unk, word2id, batch):
     """
         拆包, 处理OOV，向量化， 打包
-    :param unk:
+    :param unk: 超纲词标记
     :param word2id:  word2vec训练的结果，单词变向量
     :param batch:  批次数据
     :return:
@@ -229,12 +229,13 @@ def batchify_fn(pad, start, end, data, cuda=True):
 @curry
 def batchify_fn_copy(pad, start, end, data, cuda=True):
     """
-
-    :param pad:
-    :param start:
-    :param end:
-    :param data:
-    :param cuda:
+        针对批次数据 添加开始、结束和填充，拉齐，tensor
+        copy 表示重新申请tensor内存
+    :param pad: 填充码值
+    :param start: 开始标记
+    :param end: 结束标记
+    :param data: 批次数据
+    :param cuda: 是否转换为cuda
     :return:
     """
     sources, ext_srcs, tar_ins, targets = tuple(map(list, unzip(data)))

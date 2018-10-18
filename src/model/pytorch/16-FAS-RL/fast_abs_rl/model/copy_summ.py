@@ -52,12 +52,12 @@ class _CopyLinear(nn.Module):
 class CopySumm(Seq2SeqSumm):
     def __init__(self, vocab_size, emb_dim, n_hidden, bidirectional, n_layer, dropout=0.0):
         """
-
-        :param vocab_size:
-        :param emb_dim:
-        :param n_hidden:
-        :param bidirectional:
-        :param n_layer:
+            拷贝网络，
+        :param vocab_size: 字典大小
+        :param emb_dim: 嵌入层大小 E 128
+        :param n_hidden:    隐藏层大小 H 256
+        :param bidirectional: 是否使用双向
+        :param n_layer: 层数L
         :param dropout:
         """
         super().__init__(vocab_size, emb_dim, n_hidden, bidirectional, n_layer, dropout)
