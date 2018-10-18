@@ -87,6 +87,7 @@ def basic_validate(net, criterion, val_batches):
 class BasicPipeline(object):
     def __init__(self, name, net, train_batcher, val_batcher, batch_size, val_fn, criterion, optim, grad_fn=None):
         """
+            所谓的流水线，就是指的是 数据装载 预处理 切分词 向量化 分批 训练 求梯度 反向传播 下一epoch
         :param name: 流水线名称
         :param net: 模型忘了
         :param train_batcher: 训练批次器 本次是水桶数据装载器

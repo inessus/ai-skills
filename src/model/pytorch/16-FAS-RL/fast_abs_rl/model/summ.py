@@ -14,6 +14,7 @@ INIT = 1e-2
 class Seq2SeqSumm(nn.Module):
     def __init__(self, vocab_size, emb_dim, n_hidden, bidirectional, n_layer, dropout=0.0):
         """
+            Seq2Seq 网络 带注意力的网络
         :param vocab_size:  字典大小 V
         :param emb_dim: 嵌入尺寸  E
         :param n_hidden: 隐藏层大小 N
@@ -25,7 +26,7 @@ class Seq2SeqSumm(nn.Module):
         # embedding weight parameter is shared between encoder, decoder,
         # and used as final projection layer to vocab logit
         # can initialize with pretrained word vectors
-        self._embedding = nn.Embedding(vocab_size, emb_dim, padding_idx=0)  # (V, E)
+        self._embedding = nn.Embedding(vocab_size, emb_dim, padding_idx=0)  # (V, E)  会被替换掉
         self._enc_lstm = nn.LSTM(emb_dim, n_hidden, n_layer, bidirectional=bidirectional, dropout=dropout)  # (128*256*1)
 
         # initial encoder LSTM states are learned parameters
