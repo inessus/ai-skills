@@ -3,7 +3,6 @@ import json
 import re
 import os
 from os.path import join
-import pandas as pd
 import platform
 
 from torch.utils.data import Dataset
@@ -49,7 +48,7 @@ class JsonFileDataset(Dataset):
 
     def count_json(self, path):
         """
-            计算json文件个数
+            追加的统计文件个数的方法，计算json文件个数
             count number of data in the given path
         """
         matcher = re.compile(r'[0-9]+\.json')
@@ -70,18 +69,3 @@ class JsonFileDataset(Dataset):
         return n_data
 
 
-class Dictionary(object):
-    def __init__(self):
-
-        self.word2idx = {}
-        self.idx2word = {}
-        self.idx = 0
-
-    def add_word(self, word):
-        if not word in self.word2idx:  # 字典默认检索keys
-            self.word2idx[word] = self.idx
-            self.idx2word[self.idx] = word
-            self.idx += 1
-
-    def __len__(self):
-        return len(self.word2idx)

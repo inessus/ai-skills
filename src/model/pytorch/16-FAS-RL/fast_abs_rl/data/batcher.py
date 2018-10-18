@@ -4,7 +4,6 @@ from collections import defaultdict
 
 from toolz.sandbox import unzip
 from cytoolz import curry, concat, compose
-from cytoolz import curried
 
 import torch
 import torch.multiprocessing as mp
