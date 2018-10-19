@@ -13,7 +13,7 @@ import torch.multiprocessing as mp
 def coll_fn(data):
     """
         (callable, optional): merges a list of samples to form a mini-batch.
-        拆包，压成一维，滤0，判优，打包
+        拆包，压成一维，滤0，判优，打包  6400（）
     :param data:
     :return:
     """
@@ -121,23 +121,23 @@ def convert_batch(unk, word2id, batch):
 @curry
 def convert_batch_copy(unk, word2id, batch):
     """
-        拆包, 处理OOV，向量化， 打包
+        将一个批次32对XY 中word转换成id 对于太小的字典需要在本批次内扩充
     :param unk: 超纲词标记
     :param word2id:  word2vec训练的结果，单词变向量
-    :param batch:  批次数据
+    :param batch:  批次数据 32句话对
     :return:
     """
     sources, targets = map(list, unzip(batch))
-    ext_word2id = dict(word2id)
+    ext_word2id = dict(word2id) # 扩充字典
     for source in sources:
         for word in source:
             if word not in ext_word2id:
                 ext_word2id[word] = len(ext_word2id)
-    src_exts = conver2id(unk, ext_word2id, sources)
+    src_exts = conver2id(unk, ext_word2id, sources) # 扩充字典后的 id化
     sources = conver2id(unk, word2id, sources)
     tar_ins = conver2id(unk, word2id, targets)
     targets = conver2id(unk, ext_word2id, targets)
-    batch = list(zip(sources, src_exts, tar_ins, targets))
+    batch = list(zip(sources, src_exts, tar_ins, targets)) # 文章， 扩展文章，概括标题，扩展概括标题
     return batch
 
 
@@ -182,8 +182,8 @@ def convert_batch_extract_ff(unk, word2id, batch):
 def pad_batch_tensorize(inputs, pad, cuda=True):
     """
         pad_batch_tensorize
-        找到最长文章，拉齐，填pad
-    :param inputs: List of size B containing torch tensors of shape [T, ...]
+        找到最长文章，拉齐，填pad ，tensor化
+    :param inputs: List of size B containing torch tensors of shape [T, ...] T32
     :type inputs: List[np.ndarray]
     :rtype: TorchTensor of size (B, T, ...)
     """
@@ -233,7 +233,7 @@ def batchify_fn_copy(pad, start, end, data, cuda=True):
     :param pad: 填充码值
     :param start: 开始标记
     :param end: 结束标记
-    :param data: 批次数据
+    :param data: 批次数据 32*(正常源ids,超纲源ids，正常目标ids，超纲目标ids)
     :param cuda: 是否转换为cuda
     :return:
     """
@@ -243,17 +243,17 @@ def batchify_fn_copy(pad, start, end, data, cuda=True):
     sources = [src for src in sources]
     ext_srcs = [ext for ext in ext_srcs]
 
-    tar_ins = [[start] + tgt for tgt in tar_ins]
-    targets = [tgt + [end] for tgt in targets]
+    tar_ins = [[start] + tgt for tgt in tar_ins] # 目标每句话加开始标记
+    targets = [tgt + [end] for tgt in targets] # 超纲目标每句加结束标志
 
-    source = pad_batch_tensorize(sources, pad, cuda)
-    tar_in = pad_batch_tensorize(tar_ins, pad, cuda)
-    target = pad_batch_tensorize(targets, pad, cuda)
-    ext_src = pad_batch_tensorize(ext_srcs, pad, cuda)
+    source = pad_batch_tensorize(sources, pad, cuda) # 文章 tensor化
+    tar_in = pad_batch_tensorize(tar_ins, pad, cuda) # 概括标题 tensor化
+    target = pad_batch_tensorize(targets, pad, cuda) # 扩展概括标题 tensor化
+    ext_src = pad_batch_tensorize(ext_srcs, pad, cuda) # 扩展文章tensor化
 
-    ext_vsize = ext_src.max().item() + 1
-    fw_args = (source, src_lens, tar_in, ext_src, ext_vsize)
-    loss_args = (target, )
+    ext_vsize = ext_src.max().item() + 1 # 超纲字典个数30045
+    fw_args = (source, src_lens, tar_in, ext_src, ext_vsize) # 文章[B,T],文长 B，概括标题[B,T'], 扩展文章[B,T],扩展字典大小
+    loss_args = (target, ) # 扩展概括标题[B,T'']
     return fw_args, loss_args
 
 
@@ -318,7 +318,7 @@ class BucketedGenerater(object):
     def __init__(self, loader, prepro, sort_key, batchify, single_run=True, queue_size=8, fork=True):
         """
         :param loader: 数据装载器，已经能对数据进行分片操作
-        :param prepro: 预处理， 分批数据的预处理需要
+        :param prepro: 预处理， 切分词
         :param sort_key: 排序键值
         :param batchify: 批处理
         :param single_run: 执行完一个epoch就结束
@@ -381,7 +381,7 @@ class BucketedGenerater(object):
         else:
             i = 0
             while True:
-                for batch in self._loader:
+                for batch in self._loader: # 集装箱装载6400
                     yield from get_batches(self._prepro(batch))
                 if self._single_run:
                     break

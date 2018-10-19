@@ -27,14 +27,14 @@ from utils import make_vocab, make_embedding
 
 # NOTE: bucket size too large may sacrifice randomness,
 #       to low may increase # of PAD tokens
-BUCKET_SIZE = 6400
+BUCKET_SIZE = 6400  # 集装箱大小
 
 DATA_DIR = r'/Users/oneai/ai/data/cnndm'
 
 
 class MatchDataset(JsonFileDataset):
     """
-        优选文章和标题
+        优选文章和标题  根据Rouge贪婪搜索匹配出来的 文章和句子
         single article sentence -> single abstract sentence
         (dataset created by greedily matching ROUGE) 贪婪ROUGE搜索的数据库
     """
@@ -119,15 +119,15 @@ def build_batchers(word2id, cuda, debug):
         return (len(target), len(src))
 
     batchify = compose(
-        batchify_fn_copy(PAD, START, END, cuda=cuda),   # 补码
-        convert_batch_copy(UNK, word2id)                # 向量化
-    )
+        batchify_fn_copy(PAD, START, END, cuda=cuda),   # 填补标记 后进行
+        convert_batch_copy(UNK, word2id)                # id化 先进行
+     )
 
     train_loader = DataLoader(
         MatchDataset('train'), batch_size=BUCKET_SIZE,
         shuffle=not debug,
         num_workers=4 if cuda and not debug else 0,
-        collate_fn=coll_fn  # 拆包，压成一维，滤0，判优，打包
+        collate_fn=coll_fn  # 集装箱拆包，压成一维，滤0，判优，打包
     )
     train_batcher = BucketedGenerater(train_loader, prepro, sort_key, batchify,
                                       single_run=False, fork=not debug)

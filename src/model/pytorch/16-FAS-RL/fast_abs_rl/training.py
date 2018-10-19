@@ -175,7 +175,7 @@ class BasicTrainer(object):
         :param pipeline: 流水线
         :param save_dir: 保存路径
         :param ckpt_freq:
-        :param patience:
+        :param patience: 退出标准
         :param scheduler:
         :param val_mode:
         """
@@ -183,7 +183,7 @@ class BasicTrainer(object):
         assert val_mode in ['loss', 'score']
         self._pipeline = pipeline
         self._save_dir = save_dir
-        self._logger = tensorboardX.SummaryWriter(join(save_dir, 'log'))
+        self._logger = tensorboardX.SummaryWriter(join(save_dir, 'log')) # 日志保存
         if not exists(join(save_dir, 'ckpt')):
             os.makedirs(join(save_dir, 'ckpt'))
 

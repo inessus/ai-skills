@@ -27,7 +27,7 @@ class Seq2SeqSumm(nn.Module):
         # and used as final projection layer to vocab logit
         # can initialize with pretrained word vectors
         self._embedding = nn.Embedding(vocab_size, emb_dim, padding_idx=0)  # (V, E)  会被替换掉
-        self._enc_lstm = nn.LSTM(emb_dim, n_hidden, n_layer, bidirectional=bidirectional, dropout=dropout)  # (128*256*1)
+        self._enc_lstm = nn.LSTM(emb_dim, n_hidden, n_layer, bidirectional=bidirectional, dropout=dropout)  # (128*256*1, True)
 
         # initial encoder LSTM states are learned parameters
         state_layer = n_layer * (2 if bidirectional else 1)
@@ -57,7 +57,7 @@ class Seq2SeqSumm(nn.Module):
             nn.Tanh(),
             nn.Linear(n_hidden, emb_dim, bias=False)    # (256, 128)
         )
-        # functional object for easier usage   理解到此处
+        # functional object for easier usage   注意力解码器，或者被CopyNet解码替换掉
         self._decoder = AttentionalLSTMDecoder(
             self._embedding, self._dec_lstm,
             self._attn_wq, self._projection
@@ -75,13 +75,13 @@ class Seq2SeqSumm(nn.Module):
 
     def encode(self, article, art_lens=None):
         """
-
-        :param article:
+            针对数据的文章tensor进行编码
+        :param article: ROUGE优选文章，[B,T] 每个批次Tensor化的时候长度不同，最大T值为100
         :param art_lens:
         :return:
         """
-        # (128, art_len, 255)
-        size = (self._init_enc_h.size(0), len(art_lens) if art_lens else 1, self._init_enc_h.size(1))
+        #
+        size = (self._init_enc_h.size(0), len(art_lens) if art_lens else 1, self._init_enc_h.size(1)) # 2，32，256
 
         init_enc_states = (
             self._init_enc_h.unsqueeze(1).expand(*size),
@@ -95,11 +95,11 @@ class Seq2SeqSumm(nn.Module):
             final_states = (
                 torch.cat(h.chunk(2, dim=0), dim=2),
                 torch.cat(c.chunk(2, dim=0), dim=2)
-            )
-        init_h = torch.stack([self._dec_h(s) for s in final_states[0]], dim=0)
-        init_c = torch.stack([self._dec_c(s) for s in final_states[1]], dim=0)
+            ) # 将两层网络的值在dim2上拼接 双向神经网络的状态拼接([L,B,2N],(L, B, 2N)]
+        init_h = torch.stack([self._dec_h(s) for s in final_states[0]], dim=0) # [L,B,N]
+        init_c = torch.stack([self._dec_c(s) for s in final_states[1]], dim=0) # [L,B,N]
         init_dec_states = (init_h, init_c)
-        attention = torch.matmul(enc_art, self._attn_wm).transpose(0, 1)    # (32, 128, 256)X(256, 256)=[128, 32, 256]
+        attention = torch.matmul(enc_art, self._attn_wm).transpose(0, 1)    # [T,B,2N]*[2N,N] =[B,T,N]'(32, 128, 256)X(256, 256)=[128, 32, 256]
 
         # (256, 128)
         init_attn_out = self._projection(torch.cat([init_h[-1], sequence_mean(attention, art_lens, dim=1)], dim=1))
@@ -172,9 +172,9 @@ class AttentionalLSTMDecoder(object):
     def __init__(self, embedding, lstm, attn_w, projection):
         """
         :param embedding:  # (30004, 128)
-        :param lstm: (256, 256, 1)
-        :param attn_w: (256, 256)
-        :param projection: [521, 256]=>[256, 128]
+        :param lstm: (256, 256, 1) 解码器 LSTM 网络
+        :param attn_w: (256, 256)  注意力参数
+        :param projection: [521, 256]=>[256, 128] 映射矩阵
         """
         super().__init__()
         self._embedding = embedding
@@ -184,16 +184,17 @@ class AttentionalLSTMDecoder(object):
 
     def __call__(self, attention, init_states, target):
         """
-        :param attention: ([128, 32, 256], (XXXXXX)),
-        :param init_states: ( [(1, 128, 256), (1, 128, 256)],(256, 128)) ,
-        :param target: (32, 128)
+
+        :param attention: (注意力[B,T,N]，掩码[B,1,T]，扩展文章[B, T]，扩展字典尺寸)
+        :param init_states:(([L,B,N],[L,B,N]),[B,E]) ( [(1, 128, 256), (1, 128, 256)],(256, 128)) ,
+        :param target: 概括标题[B, T'] (32, 7)
         :return:
         """
         max_len = target.size(1)
         states = init_states
         logits = []
-        for i in range(max_len): # 对于所有通道或者句子长度
-            tok = target[:, i:i+1]
+        for i in range(max_len): # 对于所有要解码长度
+            tok = target[:, i:i+1] # [B,1]
             logit, states, _ = self._step(tok, states, attention)
             logits.append(logit)
         logit = torch.stack(logits, dim=1)
@@ -202,9 +203,9 @@ class AttentionalLSTMDecoder(object):
     def _step(self, tok, states, attention):
         """
 
-        :param tok:
-        :param states: ( [(1, 128, 256), (1, 128, 256)],(256, 128)) ,
-        :param attention: ([128, 32, 256], (XXXXXX)),
+        :param tok: 概括标题的一个单词id
+        :param states: (([L,B,N],[L,B,N]),[B,E]) ( [(1, 128, 256), (1, 128, 256)],(256, 128))
+        :param attention: (注意力[B,T,N]，掩码[B,1,T]，扩展文章[B, T]，扩展字典尺寸)
         :return:
         """
         prev_states, prev_out = states

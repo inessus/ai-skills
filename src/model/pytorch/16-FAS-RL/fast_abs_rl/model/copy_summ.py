@@ -61,23 +61,23 @@ class CopySumm(Seq2SeqSumm):
         :param dropout:
         """
         super().__init__(vocab_size, emb_dim, n_hidden, bidirectional, n_layer, dropout)
-        self._copy = _CopyLinear(n_hidden, n_hidden, 2*emb_dim)
-        self._decoder = CopyLSTMDecoder(
+        self._copy = _CopyLinear(n_hidden, n_hidden, 2*emb_dim) # （N,N,2E）
+        self._decoder = CopyLSTMDecoder( # 重新定义解码器，使用Copy解码器
             self._copy, self._embedding, self._dec_lstm,
             self._attn_wq, self._projection
         )
 
     def forward(self, article, art_lens, abstract, extend_art, extend_vsize):
         """
-
-        :param article: (B*T) (32*43)
-        :param art_lens:
-        :param abstract:
-        :param extend_art:
-        :param extend_vsize:
+            # 文章[B,T],文长 B，概括标题[B,T'], 扩展文章[B,T],扩展字典大小
+        :param article: (B*T) (32*43) 批次文章 这个文章是经过ROUGE优选的
+        :param art_lens: B 文章长度
+        :param abstract:  概括标题[B, T']
+        :param extend_art: 扩展文章[B, T]
+        :param extend_vsize: 超纲字典大小 30033
         :return:
         """
-        attention, init_dec_states = self.encode(article, art_lens)
+        attention, init_dec_states = self.encode(article, art_lens) # [B,T,N], (([L,B,N],[L,B,N]),[B,E])
         mask = len_mask(art_lens, attention.device).unsqueeze(-2)
         logit = self._decoder(
             (attention, mask, extend_art, extend_vsize),
@@ -252,14 +252,14 @@ class CopyLSTMDecoder(AttentionalLSTMDecoder):
     def _step(self, tok, states, attention):
         """
 
-        :param tok:
-        :param states:
-        :param attention:
+        :param tok: 概括标题的一个单词id
+        :param states: (([L,B,N],[L,B,N]),[B,E]) ( [(1, 128, 256), (1, 128, 256)],(256, 128))
+        :param attention:  (注意力[B,T,N]，掩码[B,1,T]，扩展文章[B, T]，扩展字典尺寸)
         :return:
         """
         prev_states, prev_out = states
         lstm_in = torch.cat(
-            [self._embedding(tok).squeeze(1), prev_out],
+            [self._embedding(tok).squeeze(1), prev_out], #[32,1]->[]
             dim=1
         )
         states = self._lstm(lstm_in, prev_states)

@@ -1,6 +1,7 @@
 import re
 import unicodedata
 import pickle as pkl
+from collections import Counter
 
 # Default word tokens
 PAD = 0     # Used for padding short sentences
@@ -22,6 +23,7 @@ class VocV1:
         self.word2count = {}  # 单词的计数
         self.num_words = 0  # Count PAD, UNK, START, END
         self.index2word = {}  # ID 代表的单词
+        self.wc = None          # 单词的计数
         self.init()
 
     def init(self):
@@ -30,6 +32,7 @@ class VocV1:
         self.index2word = {PAD: "<pad>", UNK: '<unk>', START: "<start>", END: "<end>"}  # ID 代表的单词
         self.num_words = 4  # Count SOS, EOS, PAD
         self.trimmed = False
+        self.wc = Counter()
 
     def addArticle(self, filename):
         lines = open(filename, encoding='utf-8').read().strip().split('\n')
@@ -44,7 +47,9 @@ class VocV1:
         :param sentence: 一整个句子
         :return:
         """
-        for word in sentence.split(' '):
+        split = sentence.split(' ')
+        self.wc.update(split)
+        for word in split:
             self.addWord(word)
 
     def addWord(self, word):
@@ -97,10 +102,14 @@ class VocV1:
         """
         with open(wc_path, 'rb') as f:
             wc = pkl.load(f)
-            self.init()
-            for (w, _) in wc.most_common(vocab_size):
-                self.addWord(w)
+        return self._make_vocat(wc, vocab_size)
 
+    def _make_vocat(self, wc, vocab_size):
+
+        self.init()
+        self.wc = wc
+        for (w, _) in wc.most_common(vocab_size):
+            self.addWord(w)
         return self.word2index
 
     def shave_marks(self, txt):

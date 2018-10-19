@@ -20,12 +20,12 @@ def len_mask(lens, device):
 
 def sequence_mean(sequence, seq_lens, dim=1):
     """
-        输入向量进行了转置 [128, 32, 256]
+        输入向量进行了转置 [128, 32, 256] [B,T,N]
         batch_size个向量 每个向量求平均数，组成一个向量
     """
     if seq_lens:
         assert sequence.size(0) == len(seq_lens)   # 通道， 相当于句子长度
-        sum_ = torch.sum(sequence, dim=dim, keepdim=False)  # 每行求和，保留batch_size维度
+        sum_ = torch.sum(sequence, dim=dim, keepdim=False)  # 每行求和，保留batch_size维度 (B,N)
         mean = torch.stack([s/l for s, l in zip(sum_, seq_lens)], dim=0) # 除以长度 后堆叠成一个向量
     else:
         mean = torch.mean(sequence, dim=dim, keepdim=False) # 简单直接的求平均函数
@@ -56,7 +56,7 @@ def sequence_loss(logits, targets, xent_fn=None, pad_idx=0):
 #################### LSTM helper #########################
 def reorder_sequence(sequence_emb, order, batch_first=False):
     """
-    sequence_emb: [T, B, D] if not batch_first
+    sequence_emb: [T, B, N] if not batch_first
     order: list of sequence length
     根据索引顺序选择重新排列顺序， batch_first代表梯度优先
     """
@@ -71,7 +71,7 @@ def reorder_sequence(sequence_emb, order, batch_first=False):
 
 def reorder_lstm_states(lstm_states, order):
     """
-    lstm_states: (H, C) of tensor [layer, batch, hidden]
+    lstm_states: (H, C) of tensor ([2L, B, N],[2L, B, N])
     order: list of sequence length
     """
     assert isinstance(lstm_states, tuple)

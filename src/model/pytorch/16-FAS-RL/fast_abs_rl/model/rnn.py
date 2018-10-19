@@ -9,9 +9,9 @@ from .util import reorder_sequence, reorder_lstm_states
 def lstm_encoder(sequence, lstm, seq_lens=None, init_states=None, embedding=None):
     """
 
-    :param sequence: (32, L_size, 128)
+    :param sequence: (32, L_size, 128) (B,T,)/(B,T) 或没有嵌入层
     :param lstm:    (128, 256, 1)
-    :param seq_lens:
+    :param seq_lens: pack_padded_sequence需要由大到小的长度书序，因此输出和权值都必须调整顺序
     :param init_states:   ((128, art_len, 256),  (128, art_len, 256))
     :param embedding:  (80000, 128)
     :return:
@@ -23,11 +23,11 @@ def lstm_encoder(sequence, lstm, seq_lens=None, init_states=None, embedding=None
     batch_size = sequence.size(0)
     if not lstm.batch_first:  # 批次优先 转换输入矩阵
         sequence = sequence.transpose(0, 1)
-        emb_sequence = (embedding(sequence) if embedding is not None else sequence)
-    if seq_lens:
+        emb_sequence = (embedding(sequence) if embedding is not None else sequence) # L T E
+    if seq_lens: # 按照长度进行排序
         assert batch_size == len(seq_lens)
-        sort_ind = sorted(range(len(seq_lens)), key=lambda i: seq_lens[i], reverse=True)
-        seq_lens = [seq_lens[i] for i in sort_ind]
+        sort_ind = sorted(range(len(seq_lens)), key=lambda i: seq_lens[i], reverse=True) # 取出按长度排序的索引
+        seq_lens = [seq_lens[i] for i in sort_ind] # 按索引顺序排列长度
         emb_sequence = reorder_sequence(emb_sequence, sort_ind, lstm.batch_first)
 
     if init_states is None:
@@ -38,12 +38,12 @@ def lstm_encoder(sequence, lstm, seq_lens=None, init_states=None, embedding=None
 
     if seq_lens:
         packed_seq = nn.utils.rnn.pack_padded_sequence(emb_sequence, seq_lens)
-        packed_out, final_states = lstm(packed_seq, init_states)
-        lstm_out, _ = nn.utils.rnn.pad_packed_sequence(packed_out)
+        packed_out, final_states = lstm(packed_seq, init_states) # ([P,N, (P, N)])([2L,B,N],[2L,B,256])
+        lstm_out, _ = nn.utils.rnn.pad_packed_sequence(packed_out) # [T,B,2N]
 
         back_map = {ind: i for i, ind in enumerate(sort_ind)}
         reorder_ind = [back_map[i] for i in range(len(seq_lens))]
-        lstm_out = reorder_sequence(lstm_out, reorder_ind, lstm.batch_first)
+        lstm_out = reorder_sequence(lstm_out, reorder_ind, lstm.batch_first) # [T, B, 2N]
         final_states = reorder_lstm_states(final_states, reorder_ind)
     else:
         lstm_out, final_states = lstm(emb_sequence, init_states)
