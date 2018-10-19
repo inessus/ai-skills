@@ -193,11 +193,11 @@ class AttentionalLSTMDecoder(object):
         max_len = target.size(1)
         states = init_states
         logits = []
-        for i in range(max_len): # 对于所有要解码长度
+        for i in range(max_len): # 对于所有要解码长度,依次生成
             tok = target[:, i:i+1] # [B,1]
             logit, states, _ = self._step(tok, states, attention)
             logits.append(logit)
-        logit = torch.stack(logits, dim=1)
+        logit = torch.stack(logits, dim=1) # [B,T',V']
         return logit
 
     def _step(self, tok, states, attention):

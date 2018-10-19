@@ -35,9 +35,9 @@ class _CopyLinear(nn.Module):
 
     def forward(self, context, state, input_):
         """
-
-        :param context:
-        :param state:
+            copy概率计算
+        :param context: [B,N] 由注意力和解码器输出生成context
+        :param state:   [B,N] 解码器输出
         :param input_:
         :return:
         """
@@ -46,7 +46,7 @@ class _CopyLinear(nn.Module):
                   + torch.matmul(input_, self._v_i.unsqueeze(1)))
         if self._b is not None:
             output = output + self._b.unsqueeze(0)
-        return output
+        return output # [32,1]
 
 
 class CopySumm(Seq2SeqSumm):
@@ -83,7 +83,7 @@ class CopySumm(Seq2SeqSumm):
             (attention, mask, extend_art, extend_vsize),
             init_dec_states, abstract
         )
-        return logit
+        return logit # [B,T',V']
 
     def batch_decode(self, article, art_lens, extend_art, extend_vsize, go, eos, unk, max_len):
         """
@@ -251,7 +251,7 @@ class CopyLSTMDecoder(AttentionalLSTMDecoder):
 
     def _step(self, tok, states, attention):
         """
-
+            copy机制，这个集中需要集中理解
         :param tok: 概括标题的一个单词id
         :param states: (([L,B,N],[L,B,N]),[B,E]) ( [(1, 128, 256), (1, 128, 256)],(256, 128))
         :param attention:  (注意力[B,T,N]，掩码[B,1,T]，扩展文章[B, T]，扩展字典尺寸)
@@ -259,30 +259,30 @@ class CopyLSTMDecoder(AttentionalLSTMDecoder):
         """
         prev_states, prev_out = states
         lstm_in = torch.cat(
-            [self._embedding(tok).squeeze(1), prev_out], #[32,1]->[]
+            [self._embedding(tok).squeeze(1), prev_out], #[32,1]->[31,1128]->[32,128]->[32,256]
             dim=1
         )
-        states = self._lstm(lstm_in, prev_states)
-        lstm_out = states[0][-1]
-        query = torch.mm(lstm_out, self._attn_w)
-        attention, attn_mask, extend_src, extend_vsize = attention
+        states = self._lstm(lstm_in, prev_states) # ([L,B,N],[L,B,N])
+        lstm_out = states[0][-1] # [B,N]
+        query = torch.mm(lstm_out, self._attn_w) # [B,N]*[N*N] = [B,N]
+        attention, attn_mask, extend_src, extend_vsize = attention # [B,T,N], [B,1,T],[B,T''], V'
         context, score = step_attention(
             query, attention, attention, attn_mask)
-        dec_out = self._projection(torch.cat([lstm_out, context], dim=1))
+        dec_out = self._projection(torch.cat([lstm_out, context], dim=1)) #[B,2N]-> [B,E]
 
-        # extend generation prob to extended vocabulary
-        gen_prob = self._compute_gen_prob(dec_out, extend_vsize)
-        # compute the probabilty of each copying
-        copy_prob = torch.sigmoid(self._copy(context, states[0][-1], lstm_in))
-        # add the copy prob to existing vocab distribution
+        # 计算生成概率， extend generation prob to extended vocabulary
+        gen_prob = self._compute_gen_prob(dec_out, extend_vsize) # [B,V']
+        # 计算copy概率，compute the probabilty of each copying
+        copy_prob = torch.sigmoid(self._copy(context, states[0][-1], lstm_in)) #[B,N],[B,N] [B,N] =>[B,1]
+        # 把copy概率加到扩展词汇分布上，add the copy prob to existing vocab distribution
         lp = torch.log(
-            ((-copy_prob + 1) * gen_prob
+            ((-copy_prob + 1) * gen_prob # 广播，[32, 30033]
             ).scatter_add(
                 dim=1,
                 index=extend_src.expand_as(score),
                 source=score * copy_prob
         ) + 1e-8)  # numerical stability for log
-        return lp, (states, dec_out), score
+        return lp, (states, dec_out), score # [B,V'] (([L,B,N],[L,B,N]),[B,E]) [32,70]
 
     def topk_step(self, tok, states, attention, k):
         """
@@ -336,19 +336,19 @@ class CopyLSTMDecoder(AttentionalLSTMDecoder):
 
     def _compute_gen_prob(self, dec_out, extend_vsize, eps=1e-6):
         """
-
-        :param dec_out:
+            计算生成概率，
+        :param dec_out: [B,E] 解码向量的投影矩阵计算结果
         :param extend_vsize:
         :param eps:
         :return:
         """
-        logit = torch.mm(dec_out, self._embedding.weight.t())
+        logit = torch.mm(dec_out, self._embedding.weight.t()) # [B,E]*[E, V] = [B, V]
         bsize, vsize = logit.size()
-        if extend_vsize > vsize:
+        if extend_vsize > vsize: # 有超纲词汇
             ext_logit = torch.Tensor(bsize, extend_vsize-vsize
                                     ).to(logit.device)
             ext_logit.fill_(eps)
-            gen_logit = torch.cat([logit, ext_logit], dim=1)
+            gen_logit = torch.cat([logit, ext_logit], dim=1)  # ([B,V],[B,V'-V]) =>[B,V']
         else:
             gen_logit = logit
         gen_prob = F.softmax(gen_logit, dim=-1)

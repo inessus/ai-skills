@@ -3,12 +3,12 @@ from torch.nn import functional as F
 
 
 def dot_attention_score(key, query):
-    """[B, Tk, D], [(Bs), B, Tq, D] -> [(Bs), B, Tq, Tk]"""
+    """[B, T, N], [B, 1, N] -> [B, 1, Tk]"""
     return query.matmul(key.transpose(1, 2))
 
 
 def prob_normalize(score, mask):
-    """ [(...), T]
+    """ [B, 1, Tk]
     user should handle mask shape"""
     score = score.masked_fill(mask == 0, -1e18)
     norm_score = F.softmax(score, dim=-1)
@@ -16,7 +16,7 @@ def prob_normalize(score, mask):
 
 
 def attention_aggregate(value, score):
-    """[B, Tv, D], [(Bs), B, Tq, Tv] -> [(Bs), B, Tq, D]"""
+    """[B, T, N], [B, 1, T] -> [B,1,N]"""
     output = score.matmul(value)
     return output
 
@@ -24,9 +24,9 @@ def attention_aggregate(value, score):
 def step_attention(query, key, value, mem_mask=None):
     """
 
-    :param query:  (32, 256)
-    :param key:
-    :param value:
+    :param query: [B,N] (32, 256) 解码器输出的矩阵点乘后的query值
+    :param key:   [B,T,N] attention
+    :param value: [B,T,N]
     :param mem_mask:
     :return:
     """
@@ -36,5 +36,5 @@ def step_attention(query, key, value, mem_mask=None):
         norm_score = F.softmax(score, dim=-1)
     else:
         norm_score = prob_normalize(score, mem_mask)
-    output = attention_aggregate(value, norm_score)
-    return output.squeeze(-2), norm_score.squeeze(-2)
+    output = attention_aggregate(value, norm_score) # [B,1,N]
+    return output.squeeze(-2), norm_score.squeeze(-2) # [B,N], [B,T]

@@ -8,7 +8,7 @@ from .util import reorder_sequence, reorder_lstm_states
 
 def lstm_encoder(sequence, lstm, seq_lens=None, init_states=None, embedding=None):
     """
-
+        首先进入嵌入层，然后按索引安排顺序，LSTM，恢复顺序，编码输出
     :param sequence: (32, L_size, 128) (B,T,)/(B,T) 或没有嵌入层
     :param lstm:    (128, 256, 1)
     :param seq_lens: pack_padded_sequence需要由大到小的长度书序，因此输出和权值都必须调整顺序

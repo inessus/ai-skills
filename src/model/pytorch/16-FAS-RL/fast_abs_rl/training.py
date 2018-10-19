@@ -130,7 +130,7 @@ class BasicPipeline(object):
         # forward pass of model
         self._net.train()
         fw_args, bw_args = next(self._batches)
-        net_out = self._net(*fw_args)
+        net_out = self._net(*fw_args) # [B,T',V']
 
         # get logs and output for logging, backward
         log_dict = {}

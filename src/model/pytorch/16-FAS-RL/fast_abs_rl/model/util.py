@@ -34,18 +34,18 @@ def sequence_mean(sequence, seq_lens, dim=1):
 
 def sequence_loss(logits, targets, xent_fn=None, pad_idx=0):
     """ 
-        损失函数计算了，默认使用交叉熵计算
-        挑选序列，进行整理，计算商值
+        损失函数计算了，默认使用交叉熵计算 logits [B,T',V']
+        挑选序列，进行整理，计算商值      targets [B,T']
     """
     assert logits.size()[:-1] == targets.size()
 
     mask = targets != pad_idx
-    target = targets.masked_select(mask)
+    target = targets.masked_select(mask) # 去掉pad的值，其实pad本身就是0
     logit = logits.masked_select(
-        mask.unsqueeze(2).expand_as(logits)
+        mask.unsqueeze(2).expand_as(logits) # [B,T',V']
     ).contiguous().view(-1, logits.size(-1))
     if xent_fn:
-        loss = xent_fn(logit, target)
+        loss = xent_fn(logit, target) # [BT',V'] [BT']
     else:
         loss = F.cross_entropy(logit, target)
     assert (not math.isnan(loss.mean().item())
