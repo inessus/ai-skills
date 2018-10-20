@@ -32,3 +32,5 @@ https://segmentfault.com/a/1190000009781688
 http://www.gair.link/page/TextTranslation/162?from=timeline&isappinstalled=0
 
 http://www.ituring.com.cn/book/tupubarticle/16827
+
+http://nlp.seas.harvard.edu/2018/04/03/attention.html
