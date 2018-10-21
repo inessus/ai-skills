@@ -8,14 +8,13 @@ from .util import len_mask
 from .summ import Seq2SeqSumm, AttentionalLSTMDecoder
 from . import beam_search as bs
 
-
 INIT = 1e-2
 
 
 class _CopyLinear(nn.Module):
     def __init__(self, context_dim, state_dim, input_dim, bias=True):
         """
-
+            Pgen生成
         :param context_dim: N 256
         :param state_dim:   N 256
         :param input_dim:   N 256
@@ -46,7 +45,7 @@ class _CopyLinear(nn.Module):
                   + torch.matmul(input_, self._v_i.unsqueeze(1)))
         if self._b is not None:
             output = output + self._b.unsqueeze(0)
-        return output # [32,1]
+        return output  # [32,1]
 
 
 class CopySumm(Seq2SeqSumm):
@@ -61,11 +60,9 @@ class CopySumm(Seq2SeqSumm):
         :param dropout:
         """
         super().__init__(vocab_size, emb_dim, n_hidden, bidirectional, n_layer, dropout)
-        self._copy = _CopyLinear(n_hidden, n_hidden, 2*emb_dim) # （N,N,2E）
-        self._decoder = CopyLSTMDecoder( # 重新定义解码器，使用Copy解码器
-            self._copy, self._embedding, self._dec_lstm,
-            self._attn_wq, self._projection
-        )
+        self._copy = _CopyLinear(n_hidden, n_hidden, 2 * emb_dim)  # （N,N,2E）
+        # 重新定义解码器，使用Copy解码器
+        self._decoder = CopyLSTMDecoder(self._copy, self._embedding, self._dec_lstm, self._attn_wq, self._projection)
 
     def forward(self, article, art_lens, abstract, extend_art, extend_vsize):
         """
@@ -77,13 +74,11 @@ class CopySumm(Seq2SeqSumm):
         :param extend_vsize: 超纲字典大小 30033
         :return:
         """
-        attention, init_dec_states = self.encode(article, art_lens) # [B,T,N], (([L,B,N],[L,B,N]),[B,E])
+        attention, init_dec_states = self.encode(article, art_lens)  # [B,T,N], (([L,B,N],[L,B,N]),[B,E])
         mask = len_mask(art_lens, attention.device).unsqueeze(-2)
-        logit = self._decoder(
-            (attention, mask, extend_art, extend_vsize),
-            init_dec_states, abstract
-        )
-        return logit # [B,T',V']
+
+        logit = self._decoder((attention, mask, extend_art, extend_vsize), init_dec_states, abstract)
+        return logit  # [B,T',V']
 
     def batch_decode(self, article, art_lens, extend_art, extend_vsize, go, eos, unk, max_len):
         """
@@ -104,7 +99,7 @@ class CopySumm(Seq2SeqSumm):
         attention, init_dec_states = self.encode(article, art_lens)
         mask = len_mask(art_lens, attention.device).unsqueeze(-2)
         attention = (attention, mask, extend_art, extend_vsize)
-        tok = torch.LongTensor([go]*batch_size).to(article.device)
+        tok = torch.LongTensor([go] * batch_size).to(article.device)
         outputs = []
         attns = []
         states = init_dec_states
@@ -210,7 +205,7 @@ class CopySumm(Seq2SeqSumm):
                     outputs[i] = finished[:beam_size]
                     # exclude finished inputs
                     (attention, mask, extend_art, extend_vsize
-                    ) = all_attention
+                     ) = all_attention
                     masks = [mask[j] for j, o in enumerate(outputs)
                              if o is None]
                     ind = [j for j, o in enumerate(outputs) if o is None]
@@ -234,14 +229,14 @@ class CopySumm(Seq2SeqSumm):
             for i, (o, f, b) in enumerate(zip(outputs,
                                               finished_beams, all_beams)):
                 if o is None:
-                    outputs[i] = (f+b)[:beam_size]
+                    outputs[i] = (f + b)[:beam_size]
         return outputs
 
 
 class CopyLSTMDecoder(AttentionalLSTMDecoder):
     def __init__(self, copy, *args, **kwargs):
         """
-
+            CopyNet的解码器部分
         :param copy:
         :param args:
         :param kwargs:
@@ -257,32 +252,33 @@ class CopyLSTMDecoder(AttentionalLSTMDecoder):
         :param attention:  (注意力[B,T,N]，掩码[B,1,T]，扩展文章[B, T]，扩展字典尺寸)
         :return:
         """
+        # 第一步 LSTM解码器解码
         prev_states, prev_out = states
-        lstm_in = torch.cat(
-            [self._embedding(tok).squeeze(1), prev_out], #[32,1]->[31,1128]->[32,128]->[32,256]
-            dim=1
-        )
-        states = self._lstm(lstm_in, prev_states) # ([L,B,N],[L,B,N])
-        lstm_out = states[0][-1] # [B,N]
-        query = torch.mm(lstm_out, self._attn_w) # [B,N]*[N*N] = [B,N]
-        attention, attn_mask, extend_src, extend_vsize = attention # [B,T,N], [B,1,T],[B,T''], V'
-        context, score = step_attention(
-            query, attention, attention, attn_mask)
-        dec_out = self._projection(torch.cat([lstm_out, context], dim=1)) #[B,2N]-> [B,E]
+        lstm_in = torch.cat([self._embedding(tok).squeeze(1), prev_out], dim=1)  # [32,1]->[31,128]->[32,128]->[32,256]
+        states = self._lstm(lstm_in, prev_states)  # ([L,B,N],[L,B,N])
+
+        # 第二步　点乘注意力计算
+        lstm_out = states[0][-1]  # [B,N]
+        query = torch.mm(lstm_out, self._attn_w)  # [B,N]*[N*N] = [B,N]
+        attention, attn_mask, extend_src, extend_vsize = attention  # [B,T,N], [B,1,T],[B,T''], V'
+        context, score = step_attention(query, attention, attention, attn_mask) # query, key, value
+
+        # 第三步　
+        dec_out = self._projection(torch.cat([lstm_out, context], dim=1))  # [B,2N]-> [B,E]
 
         # 计算生成概率， extend generation prob to extended vocabulary
-        gen_prob = self._compute_gen_prob(dec_out, extend_vsize) # [B,V']
+        gen_prob = self._compute_gen_prob(dec_out, extend_vsize)  # [B,V']
         # 计算copy概率，compute the probabilty of each copying
-        copy_prob = torch.sigmoid(self._copy(context, states[0][-1], lstm_in)) #[B,N],[B,N] [B,N] =>[B,1]
+        copy_prob = torch.sigmoid(self._copy(context, states[0][-1], lstm_in))  # [B,N],[B,N] [B,N] =>[B,1]
         # 把copy概率加到扩展词汇分布上，add the copy prob to existing vocab distribution
         lp = torch.log(
-            ((-copy_prob + 1) * gen_prob # 广播，[32, 30033]
-            ).scatter_add(
+            ((-copy_prob + 1) * gen_prob  # 广播，[32, 30033]
+             ).scatter_add(
                 dim=1,
                 index=extend_src.expand_as(score),
-                source=score * copy_prob
-        ) + 1e-8)  # numerical stability for log
-        return lp, (states, dec_out), score # [B,V'] (([L,B,N],[L,B,N]),[B,E]) [32,70]
+                source=score * copy_prob  # [B,T]*[B,1]
+            ) + 1e-8)  # numerical stability for log
+        return lp, (states, dec_out), score  # [B,V'] (([L,B,N],[L,B,N]),[B,E]) [32,70]
 
     def topk_step(self, tok, states, attention, k):
         """
@@ -301,7 +297,7 @@ class CopyLSTMDecoder(AttentionalLSTMDecoder):
         beam, batch = tok.size()
         lstm_in_beamable = torch.cat(
             [self._embedding(tok), prev_out], dim=-1)
-        lstm_in = lstm_in_beamable.contiguous().view(beam*batch, -1)
+        lstm_in = lstm_in_beamable.contiguous().view(beam * batch, -1)
         prev_states = (h.contiguous().view(nl, -1, d),
                        c.contiguous().view(nl, -1, d))
         h, c = self._lstm(lstm_in, prev_states)
@@ -318,35 +314,35 @@ class CopyLSTMDecoder(AttentionalLSTMDecoder):
 
         # copy mechanism is not beamable
         gen_prob = self._compute_gen_prob(
-            dec_out.contiguous().view(batch*beam, -1), extend_vsize)
+            dec_out.contiguous().view(batch * beam, -1), extend_vsize)
         copy_prob = torch.sigmoid(
             self._copy(context, lstm_out, lstm_in_beamable)
         ).contiguous().view(-1, 1)
         lp = torch.log(
             ((-copy_prob + 1) * gen_prob
-            ).scatter_add(
+             ).scatter_add(
                 dim=1,
                 index=extend_src.expand_as(score).contiguous().view(
-                    beam*batch, -1),
-                source=score.contiguous().view(beam*batch, -1) * copy_prob
-        ) + 1e-8).contiguous().view(beam, batch, -1)
+                    beam * batch, -1),
+                source=score.contiguous().view(beam * batch, -1) * copy_prob
+            ) + 1e-8).contiguous().view(beam, batch, -1)
 
         k_lp, k_tok = lp.topk(k=k, dim=-1)
         return k_tok, k_lp, (states, dec_out), score
 
     def _compute_gen_prob(self, dec_out, extend_vsize, eps=1e-6):
         """
-            计算生成概率，
+            计算生成概率，　Pgen
         :param dec_out: [B,E] 解码向量的投影矩阵计算结果
         :param extend_vsize:
         :param eps:
         :return:
         """
-        logit = torch.mm(dec_out, self._embedding.weight.t()) # [B,E]*[E, V] = [B, V]
+        logit = torch.mm(dec_out, self._embedding.weight.t())  # [B,E]*[E, V] = [B, V]
         bsize, vsize = logit.size()
-        if extend_vsize > vsize: # 有超纲词汇
-            ext_logit = torch.Tensor(bsize, extend_vsize-vsize
-                                    ).to(logit.device)
+        if extend_vsize > vsize:  # 有超纲词汇
+            ext_logit = torch.Tensor(bsize, extend_vsize - vsize
+                                     ).to(logit.device)
             ext_logit.fill_(eps)
             gen_logit = torch.cat([logit, ext_logit], dim=1)  # ([B,V],[B,V'-V]) =>[B,V']
         else:

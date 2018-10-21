@@ -3,7 +3,13 @@ from torch.nn import functional as F
 
 
 def dot_attention_score(key, query):
-    """[B, T, N], [B, 1, N] -> [B, 1, Tk]"""
+    """
+        注意力第一次点乘操作
+        [B, T, N], [B, 1, N] -> [B, 1, Tk]
+    :param key:
+    :param query:
+    :return:
+    """
     return query.matmul(key.transpose(1, 2))
 
 
@@ -16,6 +22,12 @@ def prob_normalize(score, mask):
 
 
 def attention_aggregate(value, score):
+    """
+        注意力的第二次点乘
+    :param value:
+    :param score:
+    :return:
+    """
     """[B, T, N], [B, 1, T] -> [B,1,N]"""
     output = score.matmul(value)
     return output
@@ -23,7 +35,7 @@ def attention_aggregate(value, score):
 
 def step_attention(query, key, value, mem_mask=None):
     """
-
+        点乘注意力计算　Attention(Q,K,V)=softmax(QK')V
     :param query: [B,N] (32, 256) 解码器输出的矩阵点乘后的query值
     :param key:   [B,T,N] attention
     :param value: [B,T,N]

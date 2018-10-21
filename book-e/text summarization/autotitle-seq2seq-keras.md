@@ -34,3 +34,5 @@ http://www.gair.link/page/TextTranslation/162?from=timeline&isappinstalled=0
 http://www.ituring.com.cn/book/tupubarticle/16827
 
 http://nlp.seas.harvard.edu/2018/04/03/attention.html
+
+https://www.sohu.com/a/164171974_741733

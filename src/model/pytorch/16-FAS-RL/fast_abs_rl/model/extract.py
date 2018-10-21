@@ -17,6 +17,13 @@ class ConvSentEncoder(nn.Module):
     w/ max-over-time pooling, [3, 4, 5] kernel sizes, ReLU activation
     """
     def __init__(self, vocab_size, emb_dim, n_hidden, dropout):
+        """
+
+        :param vocab_size:
+        :param emb_dim:
+        :param n_hidden:
+        :param dropout:
+        """
         super().__init__()
         self._embedding = nn.Embedding(vocab_size, emb_dim, padding_idx=0)
         self._convs = nn.ModuleList([nn.Conv1d(emb_dim, n_hidden, i)
@@ -25,6 +32,11 @@ class ConvSentEncoder(nn.Module):
         self._grad_handle = None
 
     def forward(self, input_):
+        """
+
+        :param input_:
+        :return:
+        """
         emb_input = self._embedding(input_)
         conv_in = F.dropout(emb_input.transpose(1, 2),
                             self._dropout, training=self.training)
@@ -33,6 +45,11 @@ class ConvSentEncoder(nn.Module):
         return output
 
     def set_embedding(self, embedding):
+        """
+
+        :param embedding:
+        :return:
+        """
         """embedding is the weight matrix"""
         assert self._embedding.weight.size() == embedding.size()
         self._embedding.weight.data.copy_(embedding)
@@ -117,6 +134,12 @@ class ExtractSumm(nn.Module):
         self._art_linear = nn.Linear(lstm_out_dim, lstm_out_dim)
 
     def forward(self, article_sents, sent_nums):
+        """
+
+        :param article_sents:
+        :param sent_nums:
+        :return:
+        """
         enc_sent, enc_art = self._encode(article_sents, sent_nums)
         saliency = torch.matmul(enc_sent, enc_art.unsqueeze(2))
         saliency = torch.cat(
@@ -185,8 +208,15 @@ class ExtractSumm(nn.Module):
 
 class LSTMPointerNet(nn.Module):
     """Pointer network as in Vinyals et al """
-    def __init__(self, input_dim, n_hidden, n_layer,
-                 dropout, n_hop):
+    def __init__(self, input_dim, n_hidden, n_layer, dropout, n_hop):
+        """
+
+        :param input_dim:
+        :param n_hidden:
+        :param n_layer:
+        :param dropout:
+        :param n_hop:
+        """
         super().__init__()
         self._init_h = nn.Parameter(torch.Tensor(n_layer, n_hidden))
         self._init_c = nn.Parameter(torch.Tensor(n_layer, n_hidden))
@@ -218,6 +248,13 @@ class LSTMPointerNet(nn.Module):
         self._n_hop = n_hop
 
     def forward(self, attn_mem, mem_sizes, lstm_in):
+        """
+
+        :param attn_mem:
+        :param mem_sizes:
+        :param lstm_in:
+        :return:
+        """
         """atten_mem: Tensor of size [batch_size, max_sent_num, input_dim]"""
         attn_feat, hop_feat, lstm_states, init_i = self._prepare(attn_mem)
         lstm_in = torch.cat([init_i, lstm_in], dim=1).transpose(0, 1)
@@ -231,6 +268,13 @@ class LSTMPointerNet(nn.Module):
         return output  # unormalized extraction logit
 
     def extract(self, attn_mem, mem_sizes, k):
+        """
+
+        :param attn_mem:
+        :param mem_sizes:
+        :param k:
+        :return:
+        """
         """extract k sentences, decode only, batch_size==1"""
         attn_feat, hop_feat, lstm_states, lstm_in = self._prepare(attn_mem)
         lstm_in = lstm_in.squeeze(1)
@@ -255,6 +299,11 @@ class LSTMPointerNet(nn.Module):
         return extracts
 
     def _prepare(self, attn_mem):
+        """
+
+        :param attn_mem:
+        :return:
+        """
         attn_feat = torch.matmul(attn_mem, self._attn_wm.unsqueeze(0))
         hop_feat = torch.matmul(attn_mem, self._hop_wm.unsqueeze(0))
         bs = attn_mem.size(0)
@@ -268,6 +317,14 @@ class LSTMPointerNet(nn.Module):
 
     @staticmethod
     def attention_score(attention, query, v, w):
+        """
+
+        :param attention:
+        :param query:
+        :param v:
+        :param w:
+        :return:
+        """
         """ unnormalized attention score"""
         sum_ = attention.unsqueeze(1) + torch.matmul(
             query, w.unsqueeze(0)
@@ -279,6 +336,15 @@ class LSTMPointerNet(nn.Module):
 
     @staticmethod
     def attention(attention, query, v, w, mem_sizes):
+        """
+
+        :param attention:
+        :param query:
+        :param v:
+        :param w:
+        :param mem_sizes:
+        :return:
+        """
         """ attention context vector"""
         score = LSTMPointerNet.attention_score(attention, query, v, w)
         if mem_sizes is None:
@@ -292,9 +358,18 @@ class LSTMPointerNet(nn.Module):
 
 class PtrExtractSumm(nn.Module):
     """ rnn-ext"""
-    def __init__(self, emb_dim, vocab_size, conv_hidden,
-                 lstm_hidden, lstm_layer, bidirectional,
-                 n_hop=1, dropout=0.0):
+    def __init__(self, emb_dim, vocab_size, conv_hidden, lstm_hidden, lstm_layer, bidirectional, n_hop=1, dropout=0.0):
+        """
+
+        :param emb_dim:
+        :param vocab_size:
+        :param conv_hidden:
+        :param lstm_hidden:
+        :param lstm_layer:
+        :param bidirectional:
+        :param n_hop:
+        :param dropout:
+        """
         super().__init__()
         self._sent_enc = ConvSentEncoder(
             vocab_size, emb_dim, conv_hidden, dropout)
@@ -309,6 +384,13 @@ class PtrExtractSumm(nn.Module):
         )
 
     def forward(self, article_sents, sent_nums, target):
+        """
+
+        :param article_sents:
+        :param sent_nums:
+        :param target:
+        :return:
+        """
         enc_out = self._encode(article_sents, sent_nums)
         bs, nt = target.size()
         d = enc_out.size(2)
@@ -319,11 +401,24 @@ class PtrExtractSumm(nn.Module):
         return output
 
     def extract(self, article_sents, sent_nums=None, k=4):
+        """
+
+        :param article_sents:
+        :param sent_nums:
+        :param k:
+        :return:
+        """
         enc_out = self._encode(article_sents, sent_nums)
         output = self._extractor.extract(enc_out, sent_nums, k)
         return output
 
     def _encode(self, article_sents, sent_nums):
+        """
+
+        :param article_sents:
+        :param sent_nums:
+        :return:
+        """
         if sent_nums is None:  # test-time excode only
             enc_sent = self._sent_enc(article_sents[0]).unsqueeze(0)
         else:
@@ -344,4 +439,9 @@ class PtrExtractSumm(nn.Module):
         return lstm_out
 
     def set_embedding(self, embedding):
+        """
+
+        :param embedding:
+        :return:
+        """
         self._sent_enc.set_embedding(embedding)

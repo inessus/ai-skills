@@ -1,4 +1,5 @@
 import torch
+import torch.nn as nn
 from torch.utils.data import Dataset, ConcatDataset, Subset, random_split
 
 
@@ -23,6 +24,14 @@ class MyDataset(Dataset):
 
 
 if __name__ == "__main__":
+    loss = nn.L1Loss()
+    x = torch.randn(3, 5, requires_grad=True)
+    target = torch.randn(3, 5)
+    output = loss(x, target)
+    output.backward()
+
+
+    torch.Tensor(1)
     ds0 = MyDataset(0, "type_0")
     ds1 = MyDataset(1, "type_1")
     ds2 = MyDataset(2, "type_2")

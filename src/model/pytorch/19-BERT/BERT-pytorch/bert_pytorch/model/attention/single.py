@@ -7,6 +7,7 @@ import math
 
 class Attention(nn.Module):
     """
+        标准倍数点乘模块
     Compute 'Scaled Dot Product Attention
     """
 

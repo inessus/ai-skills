@@ -171,6 +171,7 @@ class Seq2SeqSumm(nn.Module):
 class AttentionalLSTMDecoder(object):
     def __init__(self, embedding, lstm, attn_w, projection):
         """
+            注意力解码器
         :param embedding:  # (30004, 128)
         :param lstm: (256, 256, 1) 解码器 LSTM 网络
         :param attn_w: (256, 256)  注意力参数
@@ -179,12 +180,12 @@ class AttentionalLSTMDecoder(object):
         super().__init__()
         self._embedding = embedding
         self._lstm = lstm
-        self._attn_w = attn_w
+        self._attn_w = attn_w   # 解码器输出　权值
         self._projection = projection
 
     def __call__(self, attention, init_states, target):
         """
-
+            注意力的解码极值，针对每一个输出的对象，计算相应的概率
         :param attention: (注意力[B,T,N]，掩码[B,1,T]，扩展文章[B, T]，扩展字典尺寸)
         :param init_states:(([L,B,N],[L,B,N]),[B,E]) ( [(1, 128, 256), (1, 128, 256)],(256, 128)) ,
         :param target: 概括标题[B, T'] (32, 7)

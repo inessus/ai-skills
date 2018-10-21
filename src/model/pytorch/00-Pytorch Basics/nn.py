@@ -14,3 +14,4 @@ h0 = torch.randn(layers, tunnel, _size)
 output, hn = rnn(input, h0)
 output.size(), hn.size()
 # output, [batch, tunnel, hidden_size], [layers, tunnel, hidden_size]
+torch.Tensor(23)

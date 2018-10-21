@@ -24,11 +24,11 @@ def sequence_mean(sequence, seq_lens, dim=1):
         batch_size个向量 每个向量求平均数，组成一个向量
     """
     if seq_lens:
-        assert sequence.size(0) == len(seq_lens)   # 通道， 相当于句子长度
+        assert sequence.size(0) == len(seq_lens)  # 通道， 相当于句子长度
         sum_ = torch.sum(sequence, dim=dim, keepdim=False)  # 每行求和，保留batch_size维度 (B,N)
-        mean = torch.stack([s/l for s, l in zip(sum_, seq_lens)], dim=0) # 除以长度 后堆叠成一个向量
+        mean = torch.stack([s / l for s, l in zip(sum_, seq_lens)], dim=0)  # 除以长度 后堆叠成一个向量
     else:
-        mean = torch.mean(sequence, dim=dim, keepdim=False) # 简单直接的求平均函数
+        mean = torch.mean(sequence, dim=dim, keepdim=False)  # 简单直接的求平均函数
     return mean
 
 
@@ -40,12 +40,12 @@ def sequence_loss(logits, targets, xent_fn=None, pad_idx=0):
     assert logits.size()[:-1] == targets.size()
 
     mask = targets != pad_idx
-    target = targets.masked_select(mask) # 去掉pad的值，其实pad本身就是0
+    target = targets.masked_select(mask)  # 去掉pad的值，其实pad本身就是0
     logit = logits.masked_select(
-        mask.unsqueeze(2).expand_as(logits) # [B,T',V']
+        mask.unsqueeze(2).expand_as(logits)  # [B,T',V']
     ).contiguous().view(-1, logits.size(-1))
     if xent_fn:
-        loss = xent_fn(logit, target) # [BT',V'] [BT']
+        loss = xent_fn(logit, target)  # [BT',V'] [BT']
     else:
         loss = F.cross_entropy(logit, target)
     assert (not math.isnan(loss.mean().item())
