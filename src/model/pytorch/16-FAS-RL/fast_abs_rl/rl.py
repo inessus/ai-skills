@@ -99,9 +99,11 @@ def a2c_train_step(agent, abstractor, loader, opt, grad_fn,
                       * (advantage/len(indices))) # divide by T*B
     critic_loss = F.mse_loss(baseline, reward)
     # backprop and update
+
+    losses.append(critic_loss.view(-1))
     autograd.backward(
-        [critic_loss] + losses,
-        [torch.ones(1).to(critic_loss.device)]*(1+len(losses))
+        losses,
+        [torch.ones(1).to(critic_loss.device)]*(len(losses))
     )
     grad_log = grad_fn()
     opt.step()
@@ -128,7 +130,7 @@ def get_grad_fn(agent, clip_grad, max_grad=1e2):
             grad_log['grad_norm'+n] = tot_grad.item()
         grad_norm = clip_grad_norm_(
             [p for p in params if p.requires_grad], clip_grad)
-        grad_norm = grad_norm.item()
+        # grad_norm = grad_norm.item()
         if max_grad is not None and grad_norm >= max_grad:
             print('WARNING: Exploding Gradients {:.2f}'.format(grad_norm))
             grad_norm = max_grad

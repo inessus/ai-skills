@@ -195,7 +195,8 @@ def main(args):
     trainer.train()
 
 
-# python train_extractor_ml.py --path=/Users/oneai/ai/data/cnndm/extractor --w2v=/Users/oneai/ai/data/cnndm/word2vec/word2vec.128d.226k.bin
+# python train_extractor_ml.py --path=/Users/oneai/ai/data/cnndm/extractor
+# --w2v=/Users/oneai/ai/data/cnndm/word2vec/word2vec.128d.226k.bin
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='training of the feed-forward extractor (ff-ext, ML)')
     parser.add_argument('--path', required=True, help='root of the model')

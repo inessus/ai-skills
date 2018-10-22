@@ -9,6 +9,7 @@ import os
 from baselines import bench
 from baselines.common.atari_wrappers import make_atari, wrap_deepmind
 
+
 class ImageToPyTorch(gym.ObservationWrapper):
     """
     Image shape to num_channels x weight x height
@@ -20,9 +21,11 @@ class ImageToPyTorch(gym.ObservationWrapper):
 
     def observation(self, observation):
         return np.swapaxes(observation, 2, 0)/255.0
-    
+
+
 def wrap_pytorch(env):
     return ImageToPyTorch(env)
+
 
 class WrapPyTorch(gym.ObservationWrapper):
     def __init__(self, env=None):

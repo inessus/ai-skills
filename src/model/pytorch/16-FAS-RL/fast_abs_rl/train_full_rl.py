@@ -47,7 +47,7 @@ class RLDataset(JsonFileDataset):
 
 
 def load_ext_net(ext_dir):
-    ext_meta = json.load(open(join(ext_dir, 'ext_meta.json')))
+    ext_meta = json.load(open(join(ext_dir, 'meta.json')))
     assert ext_meta['net'] == 'ml_rnn_extractor'
     ext_ckpt = load_best_ckpt(ext_dir)
     ext_args = ext_meta['net_args']
@@ -174,7 +174,8 @@ def train(args):
         abs_ckpt = {'state_dict': load_best_ckpt(args.abs_dir)}
         abs_vocab = pkl.load(open(join(args.abs_dir, 'vocab.pkl'), 'rb'))
         abs_dir = join(args.path, 'abstractor')
-        os.makedirs(join(abs_dir, 'ckpt'))
+        if not os.path.exists(join(abs_dir, 'ckpt')):
+            os.makedirs(join(abs_dir, 'ckpt'))
         with open(join(abs_dir, 'meta.json'), 'w') as f:
             json.dump(net_args['abstractor'], f, indent=4)
         torch.save(abs_ckpt, join(abs_dir, 'ckpt/ckpt-0-0'))

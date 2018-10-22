@@ -108,9 +108,7 @@ class LSTMEncoder(nn.Module):
 
 class ExtractSumm(nn.Module):
     """ ff-ext """
-    def __init__(self, vocab_size, emb_dim,
-                 conv_hidden, lstm_hidden, lstm_layer,
-                 bidirectional, dropout=0.0):
+    def __init__(self, vocab_size, emb_dim, conv_hidden, lstm_hidden, lstm_layer, bidirectional, dropout=0.0):
         """
 
         :param vocab_size:
@@ -122,8 +120,7 @@ class ExtractSumm(nn.Module):
         :param dropout:
         """
         super().__init__()
-        self._sent_enc = ConvSentEncoder(
-            vocab_size, emb_dim, conv_hidden, dropout)
+        self._sent_enc = ConvSentEncoder(vocab_size, emb_dim, conv_hidden, dropout)
         self._art_enc = LSTMEncoder(
             3*conv_hidden, lstm_hidden, lstm_layer,
             dropout=dropout, bidirectional=bidirectional
