@@ -215,6 +215,7 @@ def train(args):
     trainer.train()
 
 
+# python train_full_rl.py --path=/Users/oneai/ai/data/cnndm/rl  --abs_dir=/Users/oneai/ai/data/cnndm/abstractor  --ext_dir=/Users/oneai/ai/data/cnndm/extractor
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='program to demo a Seq2Seq model')
     parser.add_argument('--path', required=True, help='root of the model')
@@ -240,5 +241,3 @@ if __name__ == '__main__':
     args.cuda = torch.cuda.is_available() and not args.no_cuda
 
     train(args)
-    # --path=/Users/oneai/ai/data/cnndm --w2v=/Users/oneai/ai/data/cnndm/word2vec/word2vec.128d.226k.bin
-    # python train_full_rl.py --path=/Users/oneai/ai/data/cnndm  --abs_dir=/Users/oneai/ai/data/cnndm  --ext_dir=/Users/oneai/ai/data/cnndm

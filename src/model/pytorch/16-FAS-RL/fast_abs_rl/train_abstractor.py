@@ -171,7 +171,7 @@ def main(args):
         'net_args': net_args,
         'traing_params': train_params
     }
-    with open(join(args.path, 'abs_meta.json'), 'w') as f:
+    with open(join(args.path, 'meta.json'), 'w') as f:
         json.dump(meta, f, indent=4)    # 缩进
 
     # 准备训练
@@ -199,7 +199,7 @@ def main(args):
 # --w2v=/Users/oneai/ai/data/cnndm/word2vec/word2vec.128d.226k.bin
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='training of the abstractor (ML)')
-    parser.add_argument('--path', required=True, help='模型根目录')
+    parser.add_argument('--path', required=True, help='模型存储目录')
 
     parser.add_argument('--vsize', type=int, action='store', default=30000, help='字典大小')
     parser.add_argument('--emb_dim', type=int, action='store', default=128, help='嵌入')
@@ -230,7 +230,7 @@ if __name__ == '__main__':
     main(args)
 
     """
-    --path=/Users/oneai/ai/data/cnndm --w2v=/Users/oneai/ai/data/cnndm/word2vec/word2vec.128d.226k.bin --debug
+    python train_abstractor.py --path=/Users/oneai/ai/data/cnndm/abstractor --w2v=/Users/oneai/ai/data/cnndm/word2vec/word2vec.128d.226k.bin
     CopySumm:
         embedding: Embedding(30004, 128, padding_idx=0)
         _enc_lstm: LSTM(128, 256, bidirectional=True)
