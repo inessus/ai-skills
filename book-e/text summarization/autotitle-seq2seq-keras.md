@@ -37,6 +37,8 @@ http://nlp.seas.harvard.edu/2018/04/03/attention.html
 
 https://www.sohu.com/a/164171974_741733
 
-https://mp.weixin.qq.com/s?__biz=MzU2OTA0NzE2NA==&mid=2247499992&idx=2&sn=35f25d164894e04f012e3f1814f67ec6&chksm=fc8621cbcbf1a8dd8489a6f54687613b70e04d565f34ac492471490279dd87446caee57c8159&mpshare=1&scene=1&srcid=1022N1GdB4MruhxmGtR4vcac&pass_ticket=gqz0%2B0afnyS6kDkX%2Bx6IHge2MRFMYLvPwGbQfv2AMSrUNjAHR03G%2BH4T9FvvO7ay#rd
 
-https://mp.weixin.qq.com/s?__biz=MzI3MTA0MTk1MA==&mid=2652029202&idx=5&sn=9b5c4b1627e9931f0d272d4607a626c5&chksm=f121b5e3c6563cf5dfb4d5953b234fae28bc949031ad7985682825877dd80c08a7219d375a51&mpshare=1&scene=1&srcid=1022lUjRZJH38M8REtoaYRT4&pass_ticket=gqz0%2B0afnyS6kDkX%2Bx6IHge2MRFMYLvPwGbQfv2AMSrUNjAHR03G%2BH4T9FvvO7ay#rd
+
+https://github.com/qfettes/DeepRL-Tutorials
+
+https://github.com/bharathgs/Awesome-pytorch-list
