@@ -4,7 +4,7 @@ import re
 import json
 from os.path import join
 import platform
-
+import pandas as pd
 from torch.utils.data import Dataset
 
 
@@ -89,7 +89,7 @@ def convert_p2j(src_path, dest_path):
     for i in range(count_train_txt(src_path)):
         dw = pd.read_json(os.path.join(src_path, "bytecup.corpus.train.{}.txt".format(i)), lines=True)
         for j in dw.index:
-            data = {'article': dw.loc[j, 'content'], 'abstract': dw.loc[j, 'title']}
+            data = {'article': dw.loc[j, 'content'].split('.'), 'abstract': [dw.loc[j, 'title']]}
             json.dump(data, open(os.path.join(dest_path, "{}.json".format(iCount)), 'w'))
             iCount += 1
             if iCount % 10000 == 0:
