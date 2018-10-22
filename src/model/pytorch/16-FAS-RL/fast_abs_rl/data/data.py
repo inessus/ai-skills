@@ -1,7 +1,7 @@
 """ CNN/DM dataset"""
-import json
-import re
 import os
+import re
+import json
 from os.path import join
 import platform
 
@@ -69,3 +69,28 @@ class JsonFileDataset(Dataset):
         return n_data
 
 
+def count_train_txt(path):
+    """
+        计算txt文件个数
+        count number of data in the given path
+    """
+    matcher = re.compile(r'.*train.[0-9]+\.txt')
+    match = lambda name: bool(matcher.match(name))
+    names = os.listdir(path)
+    n_data = len(list(filter(match, names)))
+    return n_data
+
+
+def convert_p2j(src_path, dest_path):
+    path = "/home/webdev/ai/competition/bytecup2018/data/train/"
+    raw_path = "/home/webdev/ai/competition/bytecup2018/data/raw"
+    
+    iCount = 0
+    for i in range(count_train_txt(src_path)):
+        dw = pd.read_json(os.path.join(src_path, "bytecup.corpus.train.{}.txt".format(i)), lines=True)
+        for j in dw.index:
+            data = {'article': dw.loc[j, 'content'], 'abstract': dw.loc[j, 'title']}
+            json.dump(data, open(os.path.join(dest_path, "{}.json".format(iCount)), 'w'))
+            iCount += 1
+            if iCount % 10000 == 0:
+                print("{}-{}-{}".format(i, j, iCount))
