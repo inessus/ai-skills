@@ -62,7 +62,7 @@ class Abstractor(object):
         :param max_len:
         :param cuda:
         """
-        abs_meta = json.load(open(join(abs_dir, 'meta.json')))
+        abs_meta = json.load(open(join(abs_dir, 'abs_meta.json')))
         assert abs_meta['net'] == 'base_abstractor'
         abs_args = abs_meta['net_args']
         abs_ckpt = load_best_ckpt(abs_dir)

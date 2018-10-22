@@ -176,7 +176,7 @@ def main(args):
         'net_args': net_args,
         'traing_params': train_params
     }
-    with open(join(args.path, 'meta.json'), 'w') as f:
+    with open(join(args.path, 'ext_meta.json'), 'w') as f:
         json.dump(meta, f, indent=4)
 
     # 预训练

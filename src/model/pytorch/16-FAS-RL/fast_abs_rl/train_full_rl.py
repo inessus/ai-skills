@@ -47,7 +47,7 @@ class RLDataset(JsonFileDataset):
 
 
 def load_ext_net(ext_dir):
-    ext_meta = json.load(open(join(ext_dir, 'meta.json')))
+    ext_meta = json.load(open(join(ext_dir, 'ext_meta.json')))
     assert ext_meta['net'] == 'ml_rnn_extractor'
     ext_ckpt = load_best_ckpt(ext_dir)
     ext_args = ext_meta['net_args']
@@ -240,3 +240,5 @@ if __name__ == '__main__':
     args.cuda = torch.cuda.is_available() and not args.no_cuda
 
     train(args)
+    # --path=/Users/oneai/ai/data/cnndm --w2v=/Users/oneai/ai/data/cnndm/word2vec/word2vec.128d.226k.bin
+    # python train_full_rl.py --path=/Users/oneai/ai/data/cnndm  --abs_dir=/Users/oneai/ai/data/cnndm  --ext_dir=/Users/oneai/ai/data/cnndm
