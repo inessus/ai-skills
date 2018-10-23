@@ -30,7 +30,8 @@ def main(args):
     logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
     start = time()
 
-    dataset = JsonFileDataset('train', 'cnndm', args.path)
+    # dataset = JsonFileDataset('train', 'cnndm', args.path)
+    dataset = JsonFileDataset('train', 'bytecup', args.path)
 
     save_dir = join(args.path, "word2vec")
     if not exists(save_dir):
@@ -55,3 +56,4 @@ if __name__ == '__main__':
     parser.add_argument('--dim', action='store', type=int, default=128)
     args = parser.parse_args()
     main(args)
+    # --path=/Users/oneai/ai/data/bytecup/

@@ -19,17 +19,8 @@ class JsonFileDataset(Dataset):
     """
     def __init__(self, split: str, datetype: str='cnndm', path: str=None) -> None:
         assert split in ['train', 'val', 'test']
-        assert datetype in ['bytecup2018', 'cnndm']
 
-        if path is None:
-            sysstr = platform.system()
-            if sysstr == 'Linux':
-                self.path = r'/home/webdev/ai/competition/{}/data'.format(datetype)
-
-            elif sysstr == "Darwin":
-                self.path = r'/Users/oneai/ai/data/{}'.format(datetype)
-        else:
-            self.path = path # 源路径
+        self.path = path # 源路径
         self._data_path = join(self.path, split) # 数据路径
         self._n_data = self.count_json(self._data_path)
 
