@@ -1,7 +1,10 @@
 import re
+import os
+import nltk
 import unicodedata
 import pickle as pkl
 from collections import Counter
+from nltk.corpus import stopwords
 
 # Default word tokens
 PAD = 0     # Used for padding short sentences
@@ -12,7 +15,7 @@ MAX_LENGTH = 10  # Maximum sentence length to consider
 
 
 class VocV1:
-    def __init__(self, name):
+    def __init__(self, name="new vocabulary", need_normal=False, stopword=False, pos_tag=False):
         """
             词汇表
         :param name:
@@ -24,6 +27,9 @@ class VocV1:
         self.num_words = 0  # Count PAD, UNK, START, END
         self.index2word = {}  # ID 代表的单词
         self.wc = None          # 单词的计数
+        self.need_normal = need_normal
+        self.stopword = stopword
+        self.pos_tag = pos_tag
         self.init()
 
     def init(self):
@@ -41,13 +47,21 @@ class VocV1:
         for sentence in sentences:
             self.addSentence(sentence)
 
+    def addSentences(self, sentences):
+        for sentence in sentences:
+            self.addSentence(sentence)
+
     def addSentence(self, sentence):
         """
             添加一个句子
         :param sentence: 一整个句子
         :return:
         """
+        if self.need_normal:
+            sentence = self.normalizeString(sentence)
         split = sentence.split(' ')
+        if self.stopword:
+            split = [w for w in split if (w not in stopwords.words('english'))]
         self.wc.update(split)
         for word in split:
             self.addWord(word)
@@ -146,3 +160,8 @@ class VocV1:
         s = re.sub(r"[^a-zA-Z.!?]+", r" ", s)
         s = re.sub(r"\s+", r" ", s).strip()
         return s
+
+    def save_vc(self, file_dir, name="vocab_cnt.pkl", type='pkl'):
+        if type == 'pkl':
+            with open(os.path.join(file_dir, name), 'wb') as vocab_file:
+                pkl.dump(self.wc, vocab_file)

@@ -8,6 +8,9 @@ import pandas as pd
 from torch.utils.data import Dataset
 
 
+from data.dictionary import VocV1
+
+
 class JsonFileDataset(Dataset):
     """
         train 训练数据 文件名[0-9]+.json 数字按顺序依次递增
@@ -81,16 +84,25 @@ def count_train_txt(path):
     return n_data
 
 
-def convert_p2j(src_path, dest_path):
+def convert_p2j(src_path, dest_path, voc_path=""):
     path = "/home/webdev/ai/competition/bytecup2018/data/train/"
     raw_path = "/home/webdev/ai/competition/bytecup2018/data/raw"
     
     iCount = 0
+    voc = VocV1(need_normal=True)
+
     for i in range(count_train_txt(src_path)):
         dw = pd.read_json(os.path.join(src_path, "bytecup.corpus.train.{}.txt".format(i)), lines=True)
         for j in dw.index:
             data = {'article': dw.loc[j, 'content'].split('.'), 'abstract': [dw.loc[j, 'title']]}
+
+            voc.addSentences(data['article'])
+            voc.addSentences(data['abstract'])
             json.dump(data, open(os.path.join(dest_path, "{}.json".format(iCount)), 'w'))
             iCount += 1
             if iCount % 10000 == 0:
-                print("{}-{}-{}".format(i, j, iCount))
+                print("{}-{}- lines: {} VOC:{}".format(i, j, iCount, len(voc.wc)))
+
+    if os.path.isdir(voc_path):
+        print("saving the vocabulary {}".format(len(voc.wc)))
+        voc.save_vc(dest_path)
