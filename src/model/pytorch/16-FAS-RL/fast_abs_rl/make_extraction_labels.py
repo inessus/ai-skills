@@ -13,7 +13,8 @@ from metric import compute_rouge_l
 from data.data import JsonFileDataset
 
 
-DATA_DIR = "/Users/oneai/ai/data/cnndm"
+# DATA_DIR = "/Users/oneai/ai/data/cnndm"
+DATA_DIR = "/Users/oneai/ai/data/bytecup"
 
 
 def _split_words(texts):

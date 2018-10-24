@@ -29,7 +29,8 @@ from utils import make_vocab, make_embedding
 #       to low may increase # of PAD tokens
 BUCKET_SIZE = 6400  # 集装箱大小
 
-DATA_DIR = r'/Users/oneai/ai/data/cnndm'
+# DATA_DIR = r'/Users/oneai/ai/data/cnndm'
+DATA_DIR = r'/Users/oneai/ai/data/bytecup'
 
 
 class MatchDataset(JsonFileDataset):
@@ -231,6 +232,7 @@ if __name__ == '__main__':
 
     """
     python train_abstractor.py --path=/Users/oneai/ai/data/cnndm/abstractor --w2v=/Users/oneai/ai/data/cnndm/word2vec/word2vec.128d.226k.bin
+    python train_abstractor.py --path=/Users/oneai/ai/data/bytecup/abstractor --w2v=/Users/oneai/ai/data/bytecup/word2vec/word2vec.128d.1207k.bin
     CopySumm:
         embedding: Embedding(30004, 128, padding_idx=0)
         _enc_lstm: LSTM(128, 256, bidirectional=True)

@@ -78,6 +78,8 @@ def basic_validate(net, criterion, val_batches):
             starmap(validate_fn, val_batches),
             (0, 0)
         )
+    if n_data == 0:
+        n_data = 0
     val_loss = tot_loss / n_data
     print('validation finished in {}                                    '.format(timedelta(seconds=int(time()-start))))
     print('validation loss: {:.4f} ... '.format(val_loss))
