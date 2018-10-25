@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import torchvision
 from torchvision import transforms
-from logger import Logger
+from lib.logger import Logger
 
 
 # Device configuration

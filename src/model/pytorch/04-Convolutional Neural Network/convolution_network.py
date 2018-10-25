@@ -2,12 +2,11 @@ __author__ = 'SherlockLiao'
 
 import torch
 from torch import nn, optim
-import torch.nn.functional as F
 from torch.autograd import Variable
 from torch.utils.data import DataLoader
 from torchvision import transforms
 from torchvision import datasets
-from logger import Logger
+from lib.logger import Logger
 
 # 定义超参数
 batch_size = 128
