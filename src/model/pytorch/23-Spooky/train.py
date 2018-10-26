@@ -257,9 +257,9 @@ def to_categorical(y, num_classes=None):
 
 if __name__ == "__main__":
 
-    train = pd.read_csv('/media/webdev/store/src/competition/spooky/train.csv')
-    test = pd.read_csv('/media/webdev/store/src/competition/spooky/test.csv')
-    sample = pd.read_csv('/media/webdev/store/src/competition/spooky/sample_submission.csv')
+    train = pd.read_csv('/media/webdev/store/competition/spooky/train.csv')
+    test = pd.read_csv('/media/webdev/store/competition/spooky/test.csv')
+    sample = pd.read_csv('/media/webdev/store/competition/spooky/sample_submission.csv')
     lbl_enc = preprocessing.LabelEncoder()
     y = lbl_enc.fit_transform(train.author.values)
 
@@ -273,9 +273,27 @@ if __name__ == "__main__":
 
     xtrain_tfv, xvalid_tfv, tfv = Tfidf(xtrain, xvalid)
     xtrain_ctv, xvalid_ctv, ctv = CountV(xtrain, xvalid)
+
+
     xtrain_svd_scl, xvalid_svd_scl, xtrain_svd, xvalid_svd, svd, scl = SVD(xtrain_tfv, xvalid_tfv)
+
+
+    net1 = Net1()
+    net2 = Net2()
+    net3 = Net3()
+    net4 = Net4()
+    print(net1)
+    print(net2)
+    print(net3)
+    print(net4)
+    train = BaseTrain(net1)
+    train.train(zip(xtrain_svd_scl, ytrain))
+
     embedding_index = load_GloVe()
     xtrain_glove, xvalid_glove = GloVe(xtrain, xvalid, embedding_index)
+
+
+
 
     # loss, lr = LR_train(xtrain_tfv, ytrain, xvalid_tfv, yvalid)
     # loss, lr = LR_train(xtrain_ctv, ytrain, xvalid_ctv, yvalid)
@@ -289,15 +307,7 @@ if __name__ == "__main__":
     # LR_GridSearch(xtrain_tfv, ytrain)
     # NB_GridSearch(xtrain_tfv, ytrain)
     # LR_predict(lr, tfv, test, sample)
-    net1 = Net1()
-    net2 = Net2()
-    net3 = Net3()
-    net4 = Net4()
-    print(net1)
-    print(net2)
-    print(net3)
-    print(net4)
-    BaseTrain(net1)
+
 
 
 
