@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -117,3 +118,35 @@ src/.idea/src.iml
 src/.idea/vcs.xml
 src/.idea/workspace.xml
 
+=======
+# compilation and distribution
+__pycache__
+_ext
+*.pyc
+*.so
+maskrcnn-benchmark.egg-info/
+build/
+dist/
+
+# pytorch/python/numpy formats
+*.pth
+*.pkl
+*.npy
+
+# ipython/jupyter notebooks
+*.ipynb
+**/.ipynb_checkpoints/
+
+# Editor temporaries
+*.swn
+*.swo
+*.swp
+*~
+
+# Pycharm editor settings
+.idea
+
+# project dirs
+/datasets
+/models
+>>>>>>> 8323c118d4eed03530af605f48fe6a420b54ad98
