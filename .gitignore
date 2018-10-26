@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -149,4 +148,3 @@ dist/
 # project dirs
 /datasets
 /models
->>>>>>> 8323c118d4eed03530af605f48fe6a420b54ad98
