@@ -35,7 +35,7 @@ warnings.filterwarnings('ignore')
 def combined_data(train, test):
     """
         Get the combined data
-        :param train pandas.dataframe:
+        :param trainer pandas.dataframe:
         :param test pandas.dataframe:
         :return pandas.dataframe:
     """
@@ -250,7 +250,7 @@ def perplexity_tsne_plot(pca_df, train_idx, test_idx):
 
 def test_prediction(data, train_idx):
     """
-        Try to classify train/test samples from total dataframe
+        Try to classify trainer/test samples from total dataframe
         # Run classification on total raw data
         test_prediction(total_df)
         :param data:
@@ -262,7 +262,7 @@ def test_prediction(data, train_idx):
     y = np.zeros(len(data))
     y[train_idx] = 1
 
-    # Perform shuffled CV predictions of train/test label
+    # Perform shuffled CV predictions of trainer/test label
     predictions = cross_val_predict(
         ExtraTreesClassifier(n_estimators=100, n_jobs=4),
         data, y,
@@ -279,7 +279,7 @@ def test_prediction(data, train_idx):
 
 def get_diff_columns(train_df, test_df, show_plots=True, show_all=False, threshold=0.1):
     """
-        # Get the columns which differ a lot between test and train
+        # Get the columns which differ a lot between test and trainer
         diff_df = get_diff_columns(total_df.iloc[train_idx], total_df.iloc[test_idx])
         Use KS to estimate columns where distributions differ a lot from each other
 
@@ -409,7 +409,7 @@ def all_method(total_df, train_idx, test_idx, target_col):
 if __name__ == '__main__':
     print('test')
     SAMPLE = 4459
-    train_df = pd.read_csv('/home/webdev/ai/kaggle/trainortest/train.csv').sample(SAMPLE)
+    train_df = pd.read_csv('/home/webdev/ai/kaggle/trainortest/trainer.csv').sample(SAMPLE)
     test_df = pd.read_csv('/home/webdev/ai/kaggle/trainortest/test.csv').sample(SAMPLE)
 
     total_df_all = combined_data(train_df, test_df)

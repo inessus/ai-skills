@@ -22,7 +22,7 @@ class Dictionary(object):
 class Corpus(object):
     def __init__(self, path='./data'):
         self.dic = Dictionary()
-        self.train = os.path.join(path, 'train.txt')
+        self.train = os.path.join(path, 'trainer.txt')
         self.valid = os.path.join(path, 'valid.txt')
         self.test = os.path.join(path, 'test.txt')
         self.path = path

@@ -94,7 +94,7 @@ def col_target_reg_plot(df, col, target):
 
 
 def col_concat_violin_plot(train, test, col):
-    train['eval_set'] = 'train'
+    train['eval_set'] = 'trainer'
     test['eval_set'] = 'test'
     full_df = pd.concat([train[[col, 'eval_set']], test[[col, 'eval_set']]], axis=0)
     plt.figure(figsize=(12, 6))
@@ -130,7 +130,7 @@ def important_variables_xgb(train_X, train_y):
         'silent': 1
     }
     dtrain = xgb.DMatrix(train_X, train_y, feature_names=train_X.columns.values)
-    # model = xgb.train(dict(xgb_params, silent=0), dtrain, num_boost_round=100, feval=xgb_r2_score, maximize=True)
+    # model = xgb.trainer(dict(xgb_params, silent=0), dtrain, num_boost_round=100, feval=xgb_r2_score, maximize=True)
     model = xgb.train(dict(xgb_params, silent=0), dtrain, num_boost_round=100, maximize=True)
 
     # plot the important features #
@@ -161,7 +161,7 @@ def important_variables_ensemble(train_X, train_y):
 
 if __name__ == "__main__":
     print('')
-    train_df = pd.read_csv("../input/train.csv")
+    train_df = pd.read_csv("../input/trainer.csv")
     test_df = pd.read_csv("../input/test.csv")
     col_target_strip_plot(train_df, 'X0', 'y')
     unique_number_values(train_df, False)

@@ -29,7 +29,7 @@ def important_variables_xgb(train_X, train_y):
         'silent': 1
     }
     dtrain = xgb.DMatrix(train_X, train_y, feature_names=train_X.columns.values)
-    # model = xgb.train(dict(xgb_params, silent=0), dtrain, num_boost_round=100, feval=xgb_r2_score, maximize=True)
+    # model = xgb.trainer(dict(xgb_params, silent=0), dtrain, num_boost_round=100, feval=xgb_r2_score, maximize=True)
     model = xgb.train(dict(xgb_params, silent=0), dtrain, num_boost_round=100, maximize=True)
 
     # plot the important features #
@@ -107,7 +107,7 @@ def important_variables_by_XGB(train_df, target, exclude=[], create_plot=True):
 
 def test_prediction(data, train_idx):
     """
-        Try to classify train/test samples from total dataframe
+        Try to classify trainer/test samples from total dataframe
         # Run classification on total raw data
         test_prediction(total_df)
         :param data:
@@ -119,7 +119,7 @@ def test_prediction(data, train_idx):
     y = np.zeros(len(data))
     y[train_idx] = 1
 
-    # Perform shuffled CV predictions of train/test label
+    # Perform shuffled CV predictions of trainer/test label
     predictions = cross_val_predict(
         ExtraTreesClassifier(n_estimators=100, n_jobs=4),
         data, y,
@@ -136,7 +136,7 @@ def test_prediction(data, train_idx):
 
 def get_diff_columns(train_df, test_df, show_plots=True, show_all=False, threshold=0.1):
     """
-        # Get the columns which differ a lot between test and train
+        # Get the columns which differ a lot between test and trainer
         diff_df = get_diff_columns(total_df.iloc[train_idx], total_df.iloc[test_idx])
         Use KS to estimate columns where distributions differ a lot from each other
 

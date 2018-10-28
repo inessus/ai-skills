@@ -122,7 +122,7 @@ def word_cloud_plot_v1(df, col):
 
 
 if __name__ == "__main__":
-    train_df = pd.read_json('../input/train.json')
+    train_df = pd.read_json('../input/trainer.json')
     test_df = pd.read_json('../input/test.json')
     col_count_hue_plot(train_df, 'bedrooms', 'interest_level')
     col_scatter_plot(train_df, 'price')

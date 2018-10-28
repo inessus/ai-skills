@@ -3,7 +3,6 @@ import os
 import re
 import json
 from os.path import join
-import platform
 import pandas as pd
 from torch.utils.data import Dataset
 
@@ -13,12 +12,12 @@ from data.dictionary import VocV1
 
 class JsonFileDataset(Dataset):
     """
-        train 训练数据 文件名[0-9]+.json 数字按顺序依次递增
+        trainer 训练数据 文件名[0-9]+.json 数字按顺序依次递增
         val   验证数据 文件名[0-9]+.json 数字按顺序依次递增
         test  测试数据 文件名[0-9]+.json 数字按顺序依次递增
     """
-    def __init__(self, split: str, datetype: str='cnndm', path: str=None) -> None:
-        assert split in ['train', 'val', 'test']
+    def __init__(self, split: str, path: str=None) -> None:
+        assert split in ['trainer', 'val', 'test']
 
         self.path = path # 源路径
         self._data_path = join(self.path, split) # 数据路径
@@ -68,7 +67,7 @@ def count_train_txt(path):
         计算txt文件个数
         count number of data in the given path
     """
-    matcher = re.compile(r'.*train.[0-9]+\.txt')
+    matcher = re.compile(r'.*trainer.[0-9]+\.txt')
     match = lambda name: bool(matcher.match(name))
     names = os.listdir(path)
     n_data = len(list(filter(match, names)))
@@ -76,14 +75,14 @@ def count_train_txt(path):
 
 
 def convert_p2j(src_path, dest_path, voc_path=""):
-    path = "/home/webdev/ai/competition/bytecup2018/data/train/"
+    path = "/home/webdev/ai/competition/bytecup2018/data/trainer/"
     raw_path = "/home/webdev/ai/competition/bytecup2018/data/raw"
     
     iCount = 0
     voc = VocV1(need_normal=True)
 
     for i in range(count_train_txt(src_path)):
-        dw = pd.read_json(os.path.join(src_path, "bytecup.corpus.train.{}.txt".format(i)), lines=True)
+        dw = pd.read_json(os.path.join(src_path, "bytecup.corpus.trainer.{}.txt".format(i)), lines=True)
         for j in dw.index:
             data = {'article': dw.loc[j, 'content'].split('.'), 'abstract': [dw.loc[j, 'title']]}
 

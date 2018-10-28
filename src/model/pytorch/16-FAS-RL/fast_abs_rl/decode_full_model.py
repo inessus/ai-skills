@@ -66,7 +66,9 @@ def decode(save_path, model_dir, split, batch_size,
     )
 
     # prepare save paths and logs
-    os.makedirs(join(save_path, 'output'))
+    save_file = join(save_path, 'output')
+    if not os.path.exists(save_file):
+        os.makedirs(join(save_path, 'output'))
     dec_log = {
         'abstractor': meta['net_args']['abstractor'],
         'extractor': meta['net_args']['extractor'],
@@ -156,6 +158,7 @@ def _compute_score(hyps):
     return (-repeat, lp)
 
 
+# --path=/media/webdev/store/competition/bytecup2018/data/eval --model_dir=/media/webdev/store/competition/bytecup2018/data/pretrained/new --beam=1 --val
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='run decoding of the full model (RL)')
     parser.add_argument('--path', required=True, help='path to store/eval')

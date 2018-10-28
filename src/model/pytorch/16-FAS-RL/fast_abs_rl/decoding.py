@@ -17,7 +17,8 @@ from model.rl import ActorCritic
 from data.batcher import conver2id, pad_batch_tensorize
 from data.data import JsonFileDataset
 
-DATASET_DIR = r'/Users/oneai/ai/data/cnndm'
+# DATASET_DIR = r'/Users/oneai/ai/data/cnndm'
+DATASET_DIR = r"/media/webdev/store/competition/bytecup2018/data/"
 
 
 class DecodeDataset(JsonFileDataset):
@@ -25,7 +26,7 @@ class DecodeDataset(JsonFileDataset):
 
     def __init__(self, split):
         assert split in ['val', 'test']
-        super().__init__(split, 'cnndm', DATASET_DIR)
+        super().__init__(split, DATASET_DIR)
 
     def __getitem__(self, i):
         js_data = super().__getitem__(i)
@@ -50,7 +51,16 @@ def load_best_ckpt(model_dir, reverse=False):
     ckpts = sorted([c for c in ckpts if ckpt_matcher.match(c)],
                    key=lambda c: float(c.split('-')[1]), reverse=reverse)
     print('loading checkpoint {}...'.format(ckpts[0]))
-    ckpt = torch.load(join(model_dir, 'ckpt/{}'.format(ckpts[0])))['state_dict']
+    # GPU->CPU
+    ckpt = torch.load(join(model_dir, 'ckpt/{}'.format(ckpts[0])), map_location=lambda storage, loc: storage)['state_dict']
+    """
+    CPU->CPU,GPU->GPU
+        torch.load('gen_500000.pkl')
+    GPU->CPU
+        torch.load('gen_500000.pkl', map_location=lambda storage, loc: storage)
+    CPU->GPU1   
+        torch.load('gen_500000.pkl', map_location=lambda storage, loc: storage.cuda(1))
+    """
     return ckpt
 
 

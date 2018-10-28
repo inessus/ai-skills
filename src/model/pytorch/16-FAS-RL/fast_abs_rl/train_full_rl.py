@@ -1,4 +1,4 @@
-""" full training (train rnn-ext + abs + RL) """
+""" full training (trainer rnn-ext + abs + RL) """
 import argparse
 import json
 import pickle as pkl
@@ -136,7 +136,7 @@ def build_batchers(batch_size):
         return art_sents, abs_sents
 
     loader = DataLoader(
-        RLDataset('train'), batch_size=batch_size,
+        RLDataset('trainer'), batch_size=batch_size,
         shuffle=True, num_workers=4,
         collate_fn=coll
     )

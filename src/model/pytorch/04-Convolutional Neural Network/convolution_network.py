@@ -6,7 +6,7 @@ from torch.autograd import Variable
 from torch.utils.data import DataLoader
 from torchvision import transforms
 from torchvision import datasets
-from lib.logger import Logger
+from lib import Logger
 
 # 定义超参数
 batch_size = 128

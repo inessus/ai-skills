@@ -28,7 +28,7 @@ def trim_col(df, cols, ul=99, ll=1):
 
 
 def read_data():
-    train_df = pd.read_csv('../data/prepare/train.csv', parse_dates=['timestamp'])
+    train_df = pd.read_csv('../data/prepare/trainer.csv', parse_dates=['timestamp'])
     test_df = pd.read_csv('../data/prepare/test.csv', parse_dates=['timestamp'])
     macro_df = pd.read_csv('../data/prepare/macro.csv', parse_dates=['timestamp'])
     train_df = pd.merge(train_df, macro_df, how='left', on='timestamp')
@@ -281,7 +281,7 @@ def model_data(train_df, test_df):
 
 def Validation_Methodology(train_X, train_y, test_X):
     """
-    In this competition, the train and test set are from different time periods and so
+    In this competition, the trainer and test set are from different time periods and so
     let us use the last 1 year as validation set for building our models and rest as model
     development set.
     :return:
@@ -309,7 +309,7 @@ def Validation_Methodology(train_X, train_y, test_X):
 
     xgtrain = xgb.DMatrix(dev_X, dev_y, feature_names=dev_X.columns)
     xgtest = xgb.DMatrix(val_X, val_y, feature_names=val_X.columns)
-    watchlist = [ (xgtrain,'train'), (xgtest, 'test') ]
+    watchlist = [ (xgtrain,'trainer'), (xgtest, 'test') ]
     num_rounds = 100 # Increase the number of rounds while running in local
     model = xgb.train(xgb_params, xgtrain, num_rounds, watchlist, early_stopping_rounds=50, verbose_eval=5)
 

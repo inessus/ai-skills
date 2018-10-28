@@ -106,11 +106,11 @@ criterion = nn.BCELoss()  # binary cross entropy
 d_optimizer = torch.optim.Adam(D.parameters(), lr=0.0003)
 g_optimizer = torch.optim.Adam(G.parameters(), lr=0.0003)
 
-# train
+# trainer
 for epoch in range(num_epoch):
     for i, (img, _) in enumerate(dataloader):
         num_img = img.size(0)
-        # =================train discriminator
+        # =================trainer discriminator
         real_img = Variable(img).cuda()
         real_label = Variable(torch.ones(num_img)).cuda()
         fake_label = Variable(torch.zeros(num_img)).cuda()
@@ -133,7 +133,7 @@ for epoch in range(num_epoch):
         d_loss.backward()
         d_optimizer.step()
 
-        # ===============train generator
+        # ===============trainer generator
         # compute loss of fake_img
         z = Variable(torch.randn(num_img, z_dimension)).cuda()
         fake_img = G(z)

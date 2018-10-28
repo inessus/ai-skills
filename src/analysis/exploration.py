@@ -311,7 +311,7 @@ def two_cols_violin_plot(train_df, col, target):
 
 
 def col_concat_violin_plot(train, test, col):
-    train['eval_set'] = 'train'
+    train['eval_set'] = 'trainer'
     test['eval_set'] = 'test'
     full_df = pd.concat([train[[col, 'eval_set']], test[[col, 'eval_set']]], axis=0)
     plt.figure(figsize=(12, 6))
@@ -706,7 +706,7 @@ def all_method(total_df, train_idx, test_idx, target_col):
 
 
 if __name__ == "__main__":
-    train_df = pd.read_json('../input/train.json')
+    train_df = pd.read_json('../input/trainer.json')
     test_df = pd.read_json('../input/test.json')
     # col_count_hue_plot(train_df, 'bedrooms', 'interest_level')
     # col_scatter_plot(train_df, 'price')

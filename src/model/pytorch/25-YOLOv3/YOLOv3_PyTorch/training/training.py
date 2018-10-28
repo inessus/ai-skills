@@ -125,15 +125,15 @@ def train(config):
                                                             config["global_step"])
 
             if step > 0 and step % 1000 == 0:
-                # net.train(False)
+                # net.trainer(False)
                 _save_checkpoint(net.state_dict(), config)
-                # net.train(True)
+                # net.trainer(True)
 
         lr_scheduler.step()
 
-    # net.train(False)
+    # net.trainer(False)
     _save_checkpoint(net.state_dict(), config)
-    # net.train(True)
+    # net.trainer(True)
     logging.info("Bye~")
 
 # best_eval_result = 0.0
@@ -198,7 +198,7 @@ def main():
                         format="[%(asctime)s %(filename)s] %(message)s")
 
     if len(sys.argv) != 2:
-        logging.error("Usage: python training.py params.py")
+        logging.error("Usage: python basicpipeline.py params.py")
         sys.exit()
     params_path = sys.argv[1]
     if not os.path.isfile(params_path):

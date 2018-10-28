@@ -2,8 +2,11 @@
 import argparse
 import cv2
 
+import sys
+sys.path.append("..")
+
 from maskrcnn_benchmark.config import cfg
-from predictor import COCODemo
+from demo.predictor import COCODemo
 
 import time
 
