@@ -1,5 +1,6 @@
 import os
 import sys
+import socket
 from datetime import datetime
 import tensorboardX
 from os.path import join, exists
@@ -23,7 +24,10 @@ class BasicTrainer(object):
         assert val_mode in ['loss', 'score']
         self._pipeline = pipeline
         self._save_dir = save_dir
-        self._logger = tensorboardX.SummaryWriter(join(save_dir, 'logs')) # 日志保存
+
+        current_time = datetime.now().strftime('%b%d_%H-%M-%S')
+        log_dir = join(join(save_dir, 'runs'), "{0}-{1}-{2}".format(current_time, socket.gethostname(), "name"))
+        self._logger = tensorboardX.SummaryWriter(log_dir) # 日志保存
         if not exists(join(save_dir, 'ckpt')):
             os.makedirs(join(save_dir, 'ckpt'))
 
@@ -38,7 +42,9 @@ class BasicTrainer(object):
         self._current_p = 0
         self._best_val = None
 
-    def log(self, log_dict):
+    def log(self, dict):
+        log_dict = dict['log_dict']
+        input = dict['input']
         loss = log_dict['loss'] if 'loss' in log_dict else log_dict['reward']
         if self._running_loss is not None:
             self._running_loss = 0.99*self._running_loss + 0.01*loss
@@ -49,6 +55,7 @@ class BasicTrainer(object):
             'loss' if 'loss' in log_dict else 'reward',
             self._running_loss), end="")
         # sys.stdout.flush()
+        self._logger.add_graph(self._pipeline.net, (input,))
         for key, value in log_dict.items():
             self._logger.add_scalar(
                 '{}_{}'.format(key, self._pipeline.name), value, self._step)
