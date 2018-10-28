@@ -5,8 +5,8 @@ from torch.utils.data import DataLoader
 from torchvision import transforms
 from torchvision import datasets
 
-from library.vision.modules.basicmodels import Logstic_Regression
-from library.utils.pipeline.basicpipeline import BasicPipeline, basic_validate, get_basic_grad_fn
+from library.vision.modules.basicmodels import FeedforwardNet
+from library.utils.pipeline.basicpipeline import BasicPipeline
 from library.utils.trainer.basictrainer import BasicTrainer
 
 
@@ -23,12 +23,13 @@ def build_batchers(batch):
     return train_batcher, val_batcher
 
 
-def configure_net(input_size, output_size):
+def configure_net(input_size, hidden_size,output_size):
     net_args = {
-        'in_dim': input_size,
-        'n_class': output_size
+        'input_size': input_size,
+        'hidden_size': hidden_size,
+        'num_classes': output_size
     }
-    net = Logstic_Regression(**net_args)
+    net = FeedforwardNet(**net_args)
     return net, net_args
 
 
@@ -47,11 +48,11 @@ def configure_training(opt, lr, clip_grad, lr_decay, batch_size):
 
 def main(args):
     train_batcher, val_batcher = build_batchers(args.batch)
-    net, net_args = configure_net(args.input_size, args.output_size)
-    criterion, train_params = configure_training('sgd', args.lr, args.clip, args.decay, args.batch)
-    optimizer = optim.SGD(net.parameters(), lr=args.lr)
+    net, net_args = configure_net(args.input_size, args.hidden_size,args.output_size)
+    criterion, train_params = configure_training('adam', args.lr, args.clip, args.decay, args.batch)
+    optimizer = optim.Adam(net.parameters(), lr=args.lr)
 
-    pipeline = BasicPipeline("logistic", net, train_batcher, val_batcher, args.batch, criterion, optimizer, args.clip)
+    pipeline = BasicPipeline("feedforward", net, train_batcher, val_batcher, args.batch, criterion, optimizer, args.clip)
     trainer = BasicTrainer(pipeline, args.path, args.ckpt_freq, args.patience)
     trainer.train()
 
@@ -62,6 +63,7 @@ if __name__ == '__main__':
     parser.add_argument('--path', default="/tmp/", help='root of the model')
     # model options
     parser.add_argument('--input_size', type=int, action='store', default=28*28, help='insize')
+    parser.add_argument('--hidden_size', type=int, action='store', default=500, help='hidden_size')
     parser.add_argument('--output_size', type=int, action='store', default=10, help='output')
 
     # training options

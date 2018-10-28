@@ -30,6 +30,7 @@ def get_basic_grad_fn(net, clip_grad, max_grad=1e2):
     return f
 
 
+
 @curry
 def compute_loss(net, criterion, fw_args, loss_args):
     """
@@ -41,7 +42,8 @@ def compute_loss(net, criterion, fw_args, loss_args):
     :return:
     """
     # loss = criterion(*((net(*fw_args),) + loss_args))
-    loss = criterion(net(fw_args), loss_args)
+    out = net(fw_args)
+    loss = criterion(out, loss_args)
     return loss
 
 
@@ -101,7 +103,7 @@ class BasicPipeline(object):
         :param optim: 优化器
         :param grad_fn: 梯度裁剪函数
         """
-        self.name = name
+        self._name = name
         self._net = net
         self._train_batcher = train_batcher
         self._val_batcher = val_batcher
@@ -151,12 +153,14 @@ class BasicPipeline(object):
         loss = self._criterion(net_out, bw_args).mean()
         loss.backward()
         log_dict['loss'] = loss.item()
+        # log_dict['input'] = fw_args
         if self._grad_fn is not None:
             log_dict.update(self._grad_fn())
         self._opt.step()
         self._net.zero_grad()
+        log = {'log_dict': log_dict, 'input': fw_args}
 
-        return log_dict
+        return log
 
     def validate(self):
         if callable(self._val_batcher):
@@ -184,5 +188,11 @@ class BasicPipeline(object):
         except:
             pass
 
+    @property
+    def net(self):
+        return self._net
 
+    @property
+    def name(self):
+        return self._name
 
