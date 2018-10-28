@@ -43,4 +43,4 @@ for step in range(501):
     plt.draw()
     plt.pause(0.1)
     if step % 10 == 0:
-        print('train cost', cost)
+        print('trainer cost', cost)

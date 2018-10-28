@@ -9,7 +9,7 @@ W2V_MODELS_DIR = 'w2v_models'
 
 # set paths of training and testing sets
 CORPUS_NAME = 'movie_lines_cleaned'
-CORPUS_PATH = os.path.join('/media/webdev/store/src/debug_seq2seq/data/train', CORPUS_NAME + '.txt')
+CORPUS_PATH = os.path.join('/media/webdev/store/src/debug_seq2seq/data/trainer', CORPUS_NAME + '.txt')
 TEST_DATASET_PATH = os.path.join('data', 'test', 'test_set.txt')
 
 # set word2vec params

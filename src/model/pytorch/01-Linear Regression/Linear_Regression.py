@@ -64,4 +64,4 @@ plt.legend()
 plt.show()
 
 # 保存模型
-torch.save(model.state_dict(), './linear.pth')
+torch.save(model.state_dict(), '/tmp/linear.pth')

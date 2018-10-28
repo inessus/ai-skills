@@ -2,11 +2,6 @@ import pandas as pd
 import numpy as np
 import xgboost as xgb
 from tqdm import tqdm
-import torch
-import torch.nn as nn
-import torch.optim as optim
-import torch.nn.functional as F
-
 
 import keras
 from sklearn.svm import SVC
@@ -22,9 +17,8 @@ from nltk.corpus import stopwords
 
 import warnings
 
-from lib.logger import Logger
-from lib.training import BaseTrain
-from lib.model.basic import Net1, Net2, Net3, Net4
+from lib import BaseTrain
+from lib import Net1, Net2, Net3, Net4
 
 
 warnings.filterwarnings('ignore')
@@ -257,7 +251,7 @@ def to_categorical(y, num_classes=None):
 
 if __name__ == "__main__":
 
-    train = pd.read_csv('/media/webdev/store/competition/spooky/train.csv')
+    train = pd.read_csv('/media/webdev/store/competition/spooky/trainer.csv')
     test = pd.read_csv('/media/webdev/store/competition/spooky/test.csv')
     sample = pd.read_csv('/media/webdev/store/competition/spooky/sample_submission.csv')
     lbl_enc = preprocessing.LabelEncoder()
@@ -274,9 +268,7 @@ if __name__ == "__main__":
     xtrain_tfv, xvalid_tfv, tfv = Tfidf(xtrain, xvalid)
     xtrain_ctv, xvalid_ctv, ctv = CountV(xtrain, xvalid)
 
-
     xtrain_svd_scl, xvalid_svd_scl, xtrain_svd, xvalid_svd, svd, scl = SVD(xtrain_tfv, xvalid_tfv)
-
 
     net1 = Net1()
     net2 = Net2()
@@ -291,8 +283,6 @@ if __name__ == "__main__":
 
     embedding_index = load_GloVe()
     xtrain_glove, xvalid_glove = GloVe(xtrain, xvalid, embedding_index)
-
-
 
 
     # loss, lr = LR_train(xtrain_tfv, ytrain, xvalid_tfv, yvalid)

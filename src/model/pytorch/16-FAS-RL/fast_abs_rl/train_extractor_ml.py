@@ -1,4 +1,4 @@
-""" train extractor (ML)"""
+""" trainer extractor (ML)"""
 import argparse
 import json
 import os
@@ -41,7 +41,7 @@ class ExtractDataset(JsonFileDataset):
         (dataset created by greedily matching ROUGE)
     """
     def __init__(self, split):
-        super().__init__(split, 'cnndm', DATA_DIR)
+        super().__init__(split, DATA_DIR)
 
     def __getitem__(self, i):
         js_data = super().__getitem__(i)
@@ -70,7 +70,7 @@ def build_batchers(net_type, word2id, cuda, debug):
     batchify = compose(batchify_fn(PAD, cuda=cuda), convert_batch(UNK, word2id))
 
     train_loader = DataLoader(
-        ExtractDataset('train'), batch_size=BUCKET_SIZE,
+        ExtractDataset('trainer'), batch_size=BUCKET_SIZE,
         shuffle=not debug,
         num_workers=4 if cuda and not debug else 0,
         collate_fn=coll_fn_extract

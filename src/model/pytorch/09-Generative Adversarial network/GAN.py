@@ -124,7 +124,7 @@ for epoch in range(num_epochs):  # 整批数据通过的次数
         fake_images = G(z)
         outputs = D(fake_images)
         
-        # We train G to maximize log(D(G(z)) instead of minimizing log(1-D(G(z)))
+        # We trainer G to maximize log(D(G(z)) instead of minimizing log(1-D(G(z)))
         # For the reason, see the last paragraph of section 3. https://arxiv.org/pdf/1406.2661.pdf
         
         g_loss = criterion(outputs, real_labels) # 本来是假的数据，我当成真的最小化误差，也就是当成真的最大化误差，这个解释我都觉得不妥

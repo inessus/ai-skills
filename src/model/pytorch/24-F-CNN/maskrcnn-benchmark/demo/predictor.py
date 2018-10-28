@@ -3,6 +3,9 @@ import cv2
 import torch
 from torchvision import transforms as T
 
+import sys
+sys.path.append("..")
+
 from maskrcnn_benchmark.modeling.detector import build_detection_model
 from maskrcnn_benchmark.utils.checkpoint import DetectronCheckpointer
 from maskrcnn_benchmark.structures.image_list import to_image_list
@@ -19,7 +22,7 @@ class COCODemo(object):
         "motorcycle",
         "airplane",
         "bus",
-        "train",
+        "trainer",
         "truck",
         "boat",
         "traffic light",
@@ -128,7 +131,7 @@ class COCODemo(object):
 
     def build_transform(self):
         """
-        Creates a basic transformation that was used to train the models
+        Creates a basic transformation that was used to trainer the models
         """
         cfg = self.cfg
 

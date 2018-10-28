@@ -24,9 +24,9 @@ class BERTTrainer:
                  lr: float = 1e-4, betas=(0.9, 0.999), weight_decay: float = 0.01,
                  with_cuda: bool = True, log_freq: int = 10):
         """
-        :param bert: BERT model which you want to train
+        :param bert: BERT model which you want to trainer
         :param vocab_size: total word vocab size
-        :param train_dataloader: train dataset data loader
+        :param train_dataloader: trainer dataset data loader
         :param test_dataloader: test dataset data loader [can be None]
         :param lr: learning rate of optimizer
         :param betas: Adam optimizer betas
@@ -49,7 +49,7 @@ class BERTTrainer:
             print("Using %d GPUS for BERT" % torch.cuda.device_count())
             self.model = nn.DataParallel(self.model)
 
-        # Setting the train and test data loader
+        # Setting the trainer and test data loader
         self.train_data = train_dataloader
         self.test_data = test_dataloader
 
@@ -72,15 +72,15 @@ class BERTTrainer:
     def iteration(self, epoch, data_loader, train=True):
         """
         loop over the data_loader for training or testing
-        if on train status, backward operation is activated
+        if on trainer status, backward operation is activated
         and also auto save the model every peoch
 
         :param epoch: current epoch index
         :param data_loader: torch.utils.data.DataLoader for iteration
-        :param train: boolean value of is train or test
+        :param train: boolean value of is trainer or test
         :return: None
         """
-        str_code = "train" if train else "test"
+        str_code = "trainer" if train else "test"
 
         # Setting the tqdm progress bar
         data_iter = tqdm.tqdm(enumerate(data_loader),
@@ -108,7 +108,7 @@ class BERTTrainer:
             # 2-3. Adding next_loss and mask_loss : 3.4 Pre-training Procedure
             loss = next_loss + mask_loss
 
-            # 3. backward and optimization only in train
+            # 3. backward and optimization only in trainer
             if train:
                 self.optim.zero_grad()
                 loss.backward()

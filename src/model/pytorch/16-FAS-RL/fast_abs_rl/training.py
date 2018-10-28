@@ -206,7 +206,7 @@ class BasicTrainer(object):
             self._running_loss = 0.99*self._running_loss + 0.01*loss
         else:
             self._running_loss = loss
-        print('train step: {}, {}: {:.4f}\r'.format(
+        print('trainer step: {}, {}: {:.4f}\r'.format(
             self._step,
             'loss' if 'loss' in log_dict else 'reward',
             self._running_loss), end='')

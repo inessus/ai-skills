@@ -1,7 +1,5 @@
-
 import torch
 from torch import nn, optim
-import torch.nn.functional as F
 from torch.autograd import Variable
 from torch.utils.data import DataLoader
 from torchvision import transforms
@@ -103,4 +101,7 @@ for epoch in range(num_epoches):
     print()
 
 # 保存模型
-torch.save(model.state_dict(), './logstic.pth')
+torch.save(model.state_dict(), '/tmp/logstic.pth')
+
+if __name__ == "__main__":
+    print("ok")

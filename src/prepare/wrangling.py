@@ -5,7 +5,7 @@ import pandas as pd
 def combined_data(train, test):
     """
         Get the combined data
-        :param train pandas.dataframe:
+        :param trainer pandas.dataframe:
         :param test pandas.dataframe:
         :return pandas.dataframe:
     """

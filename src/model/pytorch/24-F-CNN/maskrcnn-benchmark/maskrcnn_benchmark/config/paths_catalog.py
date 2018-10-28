@@ -47,7 +47,7 @@ class ModelCatalog(object):
         "FAIR/20171220/X-101-32x8d": "ImageNetPretrained/20171220/X-101-32x8d.pkl",
     }
 
-    C2_DETECTRON_SUFFIX = "output/train/coco_2014_train%3Acoco_2014_valminusminival/generalized_rcnn/model_final.pkl"
+    C2_DETECTRON_SUFFIX = "output/trainer/coco_2014_train%3Acoco_2014_valminusminival/generalized_rcnn/model_final.pkl"
     C2_DETECTRON_MODELS = {
         "35857197/e2e_faster_rcnn_R-50-C4_1x": "01_33_49.iAX0mXvW",
         "35857345/e2e_faster_rcnn_R-50-FPN_1x": "01_36_30.cUF7QR7I",

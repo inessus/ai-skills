@@ -14,8 +14,8 @@ np.random.seed(2018)
 class Fashion(datasets.MNIST):
     def __init__(self, root, train=True, transform=None, target_transofrm=None, download=False):
         self.urls = [
-            'http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/train-images-idx3-ubyte.gz',
-            'http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/train-labels-idx1-ubyte.gz',
+            'http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/trainer-images-idx3-ubyte.gz',
+            'http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/trainer-labels-idx1-ubyte.gz',
             'http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/t10k-images-idx3-ubyte.gz',
             'http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/t10k-labels-idx1-ubyte.gz',
         ]

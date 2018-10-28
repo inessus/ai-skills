@@ -36,7 +36,7 @@ def train_kfold(params, x_train, y_train, x_test=None, folds=5, stratify=None, r
     Optionally, the split can be stratified along a passed array. Feature importances are also computed and summed across all folds for convenience.
 
     Keyword arguments:
-    params -- Parameters passed to the xgboost model, as well as ['early_stopping_rounds', 'nrounds', 'verbose_eval'], which are passed to xgb.train()
+    params -- Parameters passed to the xgboost model, as well as ['early_stopping_rounds', 'nrounds', 'verbose_eval'], which are passed to xgb.trainer()
               Defaults: early_stopping_rounds = 50, nrounds = 100000, verbose_eval = 1
     x_train -- The training set features
     y_train -- The training set labels
@@ -107,7 +107,7 @@ def train_kfold(params, x_train, y_train, x_test=None, folds=5, stratify=None, r
 
     fold_i = 0
     for train_kf, valid_kf in splits:
-        print('[mlcrate] Running fold {}, {} train samples, {} validation samples'.format(fold_i, len(train_kf), len(valid_kf)))
+        print('[mlcrate] Running fold {}, {} trainer samples, {} validation samples'.format(fold_i, len(train_kf), len(valid_kf)))
         d_train = xgb.DMatrix(x_train[train_kf], label=y_train[train_kf])
         d_valid = xgb.DMatrix(x_train[valid_kf], label=y_train[valid_kf])
 
@@ -115,7 +115,7 @@ def train_kfold(params, x_train, y_train, x_test=None, folds=5, stratify=None, r
         t.add('fold{}'.format(fold_i))
 
         # Metrics to print
-        watchlist = [(d_train, 'train'), (d_valid, 'valid')]
+        watchlist = [(d_train, 'trainer'), (d_valid, 'valid')]
 
         mdl = xgb.train(params, d_train, params.get('nrounds', 100000), watchlist,
                         early_stopping_rounds=params.get('early_stopping_rounds', 50), verbose_eval=params.get('verbose_eval', 1), feval=params.get('feval'))

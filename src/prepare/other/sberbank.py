@@ -65,7 +65,7 @@ def col_target_box_plot(train, col, target):
 
 
 if __name__ == "__main__":
-    train_df = pd.read_csv('../input/train.csv')
+    train_df = pd.read_csv('../input/trainer.csv')
     train_df.describe(train_df, 'price_doc')
     target_sort_scatter_plot(train_df, 'price_doc')
     target_log_dist_plot(train_df, 'price_doc')

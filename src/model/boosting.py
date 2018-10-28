@@ -21,7 +21,7 @@ def runXGB(train_X, train_y, test_X, test_y=None, test_X2=None, seed_val=0, chil
 
     if test_y is not None:
         xgtest = xgb.DMatrix(test_X, label=test_y)
-        watchlist = [ (xgtrain,'train'), (xgtest, 'test') ]
+        watchlist = [ (xgtrain,'trainer'), (xgtest, 'test') ]
         model = xgb.train(plst, xgtrain, num_rounds, watchlist, early_stopping_rounds=50, verbose_eval=20)
     else:
         xgtest = xgb.DMatrix(test_X)
@@ -53,7 +53,7 @@ def runXGB(train_X, train_y, test_X, test_y=None, feature_names=None, seed_val=0
 
     if test_y is not None:
         xgtest = xgb.DMatrix(test_X, label=test_y)
-        watchlist = [ (xgtrain,'train'), (xgtest, 'test') ]
+        watchlist = [ (xgtrain,'trainer'), (xgtest, 'test') ]
         model = xgb.train(plst, xgtrain, num_rounds, watchlist, early_stopping_rounds=20)
     else:
         xgtest = xgb.DMatrix(test_X)

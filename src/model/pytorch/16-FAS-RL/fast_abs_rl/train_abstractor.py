@@ -1,4 +1,4 @@
-""" train the abstractor"""
+""" trainer the abstractor"""
 import argparse
 import json
 import os
@@ -41,7 +41,7 @@ class MatchDataset(JsonFileDataset):
     """
 
     def __init__(self, split):
-        super().__init__(split, 'cnndm', DATA_DIR)
+        super().__init__(split, DATA_DIR)
 
     def __getitem__(self, i):
         js_data = super().__getitem__(i)
@@ -125,7 +125,7 @@ def build_batchers(word2id, cuda, debug):
      )
 
     train_loader = DataLoader(
-        MatchDataset('train'), batch_size=BUCKET_SIZE,
+        MatchDataset('trainer'), batch_size=BUCKET_SIZE,
         shuffle=not debug,
         num_workers=4 if cuda and not debug else 0,
         collate_fn=coll_fn  # 集装箱拆包，压成一维，滤0，判优，打包

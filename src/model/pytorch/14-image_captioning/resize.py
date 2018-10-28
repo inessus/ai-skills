@@ -33,7 +33,7 @@ def main(args):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--image_dir', type=str, default='./data/train2014/',
-                        help='directory for train images')
+                        help='directory for trainer images')
     parser.add_argument('--output_dir', type=str, default='./data/resized2014/',
                         help='directory for saving resized images')
     parser.add_argument('--image_size', type=int, default=256,

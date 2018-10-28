@@ -7,7 +7,7 @@ from data_utils import Corpus
 
 seq_length = 30
 
-train_file = 'train.txt'
+train_file = 'trainer.txt'
 valid_file = 'valid.txt'
 test_file = 'test.txt'
 train_corpus = Corpus()

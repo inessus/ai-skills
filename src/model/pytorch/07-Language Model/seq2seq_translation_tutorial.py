@@ -11,7 +11,7 @@ French to English.
 
     [KEY: > input, = target, < output]
 
-    > il est en train de peindre un tableau .
+    > il est en trainer de peindre un tableau .
     = he is painting a picture .
     < he is painting a picture .
 
@@ -230,7 +230,7 @@ def readLangs(lang1, lang2, reverse=False):
 
 
 ######################################################################
-# Since there are a *lot* of example sentences and we want to train
+# Since there are a *lot* of example sentences and we want to trainer
 # something quickly, we'll trim the data set to only relatively short and
 # simple sentences. Here the maximum length is 10 words (that includes
 # ending punctuation) and we're filtering to sentences that translate to
@@ -403,7 +403,7 @@ class DecoderRNN(nn.Module):
         return torch.zeros(1, 1, self.hidden_size, device=device)
 
 ######################################################################
-# I encourage you to train and observe the results of this model, but to
+# I encourage you to trainer and observe the results of this model, but to
 # save space we'll be going straight for the gold and introducing the
 # Attention Mechanism.
 #
@@ -430,7 +430,7 @@ class DecoderRNN(nn.Module):
 # Calculating the attention weights is done with another feed-forward
 # layer ``attn``, using the decoder's input and hidden state as inputs.
 # Because there are sentences of all sizes in the training data, to
-# actually create and train this layer we have to choose a maximum
+# actually create and trainer this layer we have to choose a maximum
 # sentence length (input length, for encoder outputs) that it can apply
 # to. Sentences of the maximum length will use all the attention weights,
 # while shorter sentences will only use the first few.
@@ -489,7 +489,7 @@ class AttnDecoderRNN(nn.Module):
 # Preparing Training Data
 # -----------------------
 #
-# To train, for each pair we will need an input tensor (indexes of the
+# To trainer, for each pair we will need an input tensor (indexes of the
 # words in the input sentence) and target tensor (indexes of the words in
 # the target sentence). While creating these vectors we will append the
 # EOS token to both sequences.
@@ -515,7 +515,7 @@ def tensorsFromPair(pair):
 # Training the Model
 # ------------------
 #
-# To train we run the input sentence through the encoder, and keep track
+# To trainer we run the input sentence through the encoder, and keep track
 # of every output and the latest hidden state. Then the decoder is given
 # the ``<SOS>`` token as its first input, and the last hidden state of the
 # encoder as its first hidden state.
@@ -624,7 +624,7 @@ def timeSince(since, percent):
 # -  Create set of training pairs
 # -  Start empty losses array for plotting
 #
-# Then we call ``train`` many times and occasionally print the progress (%
+# Then we call ``trainer`` many times and occasionally print the progress (%
 # of examples, time so far, estimated time) and average loss.
 #
 
@@ -764,7 +764,7 @@ def evaluateRandomly(encoder, decoder, n=10):
 # reasonable results.
 #
 # .. Note::
-#    If you run this notebook you can train, interrupt the kernel,
+#    If you run this notebook you can trainer, interrupt the kernel,
 #    evaluate, and continue training later. Comment out the lines where the
 #    encoder and decoder are initialized and run ``trainIters`` again.
 #
