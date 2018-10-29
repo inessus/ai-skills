@@ -55,7 +55,10 @@ class BasicTrainer(object):
             'loss' if 'loss' in log_dict else 'reward',
             self._running_loss), end="")
         # sys.stdout.flush()
-        self._logger.add_graph(self._pipeline.net, (input,))
+        try:
+            self._logger.add_graph(self._pipeline.net, (input,))
+        except:
+            pass
         for key, value in log_dict.items():
             self._logger.add_scalar(
                 '{}_{}'.format(key, self._pipeline.name), value, self._step)
