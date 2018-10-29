@@ -1,9 +1,11 @@
 import torch
 import torch.utils.data as Data
 import torch.nn.functional as F
-
+import platform
 import matplotlib
-matplotlib.use('TkAgg')
+plat = platform.system()
+if plat == 'Darwin':
+    matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 
 # 解决mac下matplotlib问题
