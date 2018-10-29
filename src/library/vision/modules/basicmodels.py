@@ -175,6 +175,11 @@ class ConvNet4(nn.Module):
         self.fc = nn.Linear(7 * 7 * 32, num_classes)
 
     def forward(self, x):
+        """
+
+        :param x: 32*1*28*28
+        :return:
+        """
         out = self.layer1(x)
         out = self.layer2(out)
         out = out.reshape(out.size(0), -1)
