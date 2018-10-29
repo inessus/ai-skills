@@ -109,6 +109,11 @@ def plot_param_tsne(last_layer, test_y, nums=500):
     labels = test_y.numpy()[:nums]
     plot_with_labels(low_dim_embs, labels)
 
+
+def plot_cnn_last_layer():
+    pass
+
+
 plt.ion()
 # training and testing
 for epoch in range(EPOCH):
