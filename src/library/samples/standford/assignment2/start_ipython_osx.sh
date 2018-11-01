@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 # Assume the virtualenv is called .env
 
 cp frameworkpython .env/bin
