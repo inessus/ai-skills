@@ -1,42 +1,35 @@
 import argparse
 import torch
 from torch import nn, optim
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, Dataset
 from torchvision import transforms
 from torchvision import datasets
 
-from library.vision.modules.resnet import ResNet,ResidualBlock
+from library.vision.modules.basicmodels import FeedforwardNet
 from library.utils.pipeline.basicpipeline import BasicPipeline
 from library.utils.trainer.basictrainer import BasicTrainer
 
-torch.utils.data.TensorDataset
+
+from library.utils.datasets.cifar10file import CIFARFileDataSets
+
+
 def build_batchers(batch):
     # 下载训练集 MNIST 手写数字训练集
 
-    transform = transforms.Compose([
-        transforms.Pad(4),
-        transforms.RandomHorizontalFlip(),
-        transforms.RandomCrop(32),
-        transforms.ToTensor()])
-
-    train_dataset = datasets.MNIST(
-        root='/media/webdev/store/data', train=True, transform=transform, download=True)
-
-    test_dataset = datasets.MNIST(
-        root='/media/webdev/store/data', train=False, transform=transform)
+    train_dataset, test_dataset = CIFARFileDataSets()
 
     train_batcher = DataLoader(train_dataset, batch_size=batch, shuffle=True)
     val_batcher = DataLoader(test_dataset, batch_size=batch, shuffle=False)
     return train_batcher, val_batcher
 
 
-def configure_net():
+def configure_net(input_size, hidden_size,output_size):
     net_args = {
-        "block": ResidualBlock,
-        "layers": [2, 2, 2, 2]
+        'input_size': input_size,
+        'hidden_size': hidden_size,
+        'num_classes': output_size
     }
-    net = ResNet(**net_args)
-    # net = ConvNet4(**net_args)
+    net = FeedforwardNet(**net_args)
     return net, net_args
 
 
@@ -55,11 +48,11 @@ def configure_training(opt, lr, clip_grad, lr_decay, batch_size):
 
 def main(args):
     train_batcher, val_batcher = build_batchers(args.batch)
-    net, net_args = configure_net()
+    net, net_args = configure_net(args.input_size, args.hidden_size,args.output_size)
     criterion, train_params = configure_training('adam', args.lr, args.clip, args.decay, args.batch)
     optimizer = optim.Adam(net.parameters(), lr=args.lr)
 
-    pipeline = BasicPipeline("ConNet", net, train_batcher, val_batcher, args.batch, criterion, optimizer, args.clip)
+    pipeline = BasicPipeline("feedforward", net, train_batcher, val_batcher, args.batch, criterion, optimizer, args.clip)
     trainer = BasicTrainer(pipeline, args.path, args.ckpt_freq, args.patience)
     trainer.train()
 
@@ -89,4 +82,3 @@ if __name__ == '__main__':
     args.cuda = torch.cuda.is_available() and not args.no_cuda
 
     main(args)
-
