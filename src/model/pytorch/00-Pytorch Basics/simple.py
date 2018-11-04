@@ -82,6 +82,7 @@ def restore_params():
     plt.plot(x.data.numpy(),prediction.data.numpy(), 'r-', lw=5)
     plt.show()
 
+F.tanh()
 
 if __name__ == "__main__":
 
