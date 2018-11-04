@@ -7,9 +7,11 @@ from transformer.Layers import EncoderLayer, DecoderLayer
 
 __author__ = "Yu-Hsiang Huang"
 
+
 def get_non_pad_mask(seq):
     assert seq.dim() == 2
     return seq.ne(Constants.PAD).type(torch.float).unsqueeze(-1)
+
 
 def get_sinusoid_encoding_table(n_position, d_hid, padding_idx=None):
     ''' Sinusoid position encoding table '''
@@ -31,6 +33,7 @@ def get_sinusoid_encoding_table(n_position, d_hid, padding_idx=None):
 
     return torch.FloatTensor(sinusoid_table)
 
+
 def get_attn_key_pad_mask(seq_k, seq_q):
     ''' For masking out the padding part of key sequence. '''
 
@@ -41,6 +44,7 @@ def get_attn_key_pad_mask(seq_k, seq_q):
 
     return padding_mask
 
+
 def get_subsequent_mask(seq):
     ''' For masking out the subsequent info. '''
 
@@ -50,6 +54,7 @@ def get_subsequent_mask(seq):
     subsequent_mask = subsequent_mask.unsqueeze(0).expand(sz_b, -1, -1)  # b x ls x ls
 
     return subsequent_mask
+
 
 class Encoder(nn.Module):
     ''' A encoder model with self attention mechanism. '''
@@ -97,6 +102,7 @@ class Encoder(nn.Module):
         if return_attns:
             return enc_output, enc_slf_attn_list
         return enc_output,
+
 
 class Decoder(nn.Module):
     ''' A decoder model with self attention mechanism. '''
@@ -151,6 +157,7 @@ class Decoder(nn.Module):
         if return_attns:
             return dec_output, dec_slf_attn_list, dec_enc_attn_list
         return dec_output,
+
 
 class Transformer(nn.Module):
     ''' A sequence to sequence model with attention mechanism. '''
