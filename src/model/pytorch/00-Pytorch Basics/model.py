@@ -24,5 +24,9 @@ if __name__ == "__main__":
     F.softplus
     F.softmax()
     F.softmin()
+    F.leaky_relu()
+    F.prelu()
+    nn.BatchNorm1d()
+
     for k, v, in mm._backend.function_classes.items():
         print("{0:40s} {1}".format(k, v))
