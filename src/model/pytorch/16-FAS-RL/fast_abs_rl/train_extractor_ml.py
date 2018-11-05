@@ -44,7 +44,7 @@ class ExtractDataset(JsonFileDataset):
         super().__init__(split, DATA_DIR)
 
     def __getitem__(self, i):
-        js_data = super().__getitem__(i)
+        js_data = super().__getitem__(i) # JsonFileDataset返回的json字符串
         art_sents, extracts = js_data['article'], js_data['extracted']
         return art_sents, extracts
 

@@ -13,7 +13,7 @@ class JsonFileDataset(Dataset):
         test  测试数据 文件名[0-9]+.json 数字按顺序依次递增
     """
     def __init__(self, split: str, path: str=None) -> None:
-        assert split in ['trainer', 'val', 'test']
+        assert split in ['train', 'val', 'test']
 
         self.path = path # 源路径
         self._data_path = join(self.path, split) # 数据路径

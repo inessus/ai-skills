@@ -16,5 +16,5 @@ if __name__ == "__main__":
         raw_path = "/Users/oneai/ai/data/bytecup/raw"
         voc_path = "/Users/oneai/ai/data/bytecup"
 
-    # convert_p2j(raw_path, dst_path, voc_path)
+    convert_p2j(raw_path, dst_path, voc_path)
     convert_txt_json(val_path, val_path)

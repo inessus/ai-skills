@@ -160,7 +160,7 @@ class LSTMPointerNet(nn.Module):
         output = torch.matmul(norm_score, attention)
 
 
-class FFextExtractSumm(nn.Module):
+class ExtractSumm(nn.Module):
     """ ff-ext """
     def __init__(self, vocab_size, emb_dim, conv_hidden, lstm_hidden, lstm_layer, bidirectional, dropout=0.0):
         """
