@@ -33,7 +33,7 @@ def coll_fn_extract(data):
     :return:
     """
     def is_good_data(d):
-        """ make sure data is not empty"""
+        """ 确保数据不空，有X有Y，不检查内容"""
         source_sents, extracts = d
         return source_sents and extracts
     batch = list(filter(is_good_data, data))
@@ -67,7 +67,7 @@ def conver2id(unk, word2id, words_list):
 @curry
 def prepro_fn(max_src_len, max_tgt_len, batch):
     """
-        对原始数据进行预处理，切分词，截断
+        对原始数据进行预处理，切分词，截断   B*[([aritical0, source1, ... ,sourcen], []
     :param max_src_len: 最大源长度 100
     :param max_tgt_len: 最大目标长度 30
     :param batch:   批次原始数据数据 (23126*[****], 23126*[*****])
@@ -83,10 +83,10 @@ def prepro_fn(max_src_len, max_tgt_len, batch):
 @curry
 def prepro_fn_extract(max_src_len, max_src_num, batch):
     """
-        tokenized源数据 并筛选extracts数据
+        tokenized源数据 并筛选extracts数据 B*[([aritical0, source1, ... ,sourcen], []), ..., ]
     :param max_src_len: tokenize最大长度
     :param max_src_num: 截取长度，也是extracts的长度
-    :param batch:
+    :param batch: 6400组数据，每组数据包含一个元组（articts, extract）, articts是双层List， extract是单层List
     :return:
     """
     def prepro_one(sample):
@@ -98,6 +98,7 @@ def prepro_fn_extract(max_src_len, max_src_num, batch):
         tokenized_sents = tokenize(max_src_len, source_sents)[:max_src_num]
         cleaned_extracts = list(filter(lambda e: e < len(tokenized_sents), extracts))
         return tokenized_sents, cleaned_extracts
+        # return tokenized_sents, extracts
     batch = list(map(prepro_one, batch))
     return batch
 
@@ -170,10 +171,12 @@ def convert_batch_extract_ff(unk, word2id, batch):
     def convert_one(sample):
         source_sents, extracts = sample
         id_sents = conver2id(unk, word2id, source_sents)
+        id_extr = conver2id(unk, word2id, extracts)
         binary_extracts = [0] * len(source_sents)
         for ext in extracts:
             binary_extracts[ext] = 1
         return id_sents, binary_extracts
+        # return id_sents, id_extr
     batch = list(map(convert_one, batch))
     return batch
 

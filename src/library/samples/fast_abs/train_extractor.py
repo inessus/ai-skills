@@ -11,20 +11,19 @@ from torch.nn import functional as F
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 from torch.utils.data import DataLoader
 
-
 from library.utils.datasets.dictionary import PAD, UNK, make_vocab
 from library.utils.datasets.jsonfile import JsonFileDataset
 from library.utils.datasets.batcher import coll_fn_extract, prepro_fn_extract
 from library.utils.datasets.batcher import convert_batch_extract_ff, batchify_fn_extract_ff
 from library.utils.datasets.batcher import convert_batch_extract_ptr, batchify_fn_extract_ptr
 from library.utils.datasets.batcher import BucketedGenerater
-from library.text.modules.ffext import FFextExtractSumm
+from library.text.modules.ffext import ExtractSumm
 from library.text.modules.ptrext import PtrExtractSumm
 from library.utils.transforms.sequence import sequence_loss
 from library.text.modules.base.embedding import make_embedding
 
-from utils.pipeline.basicpipeline import basic_validate, BasicPipeline, BasicTrainer, get_basic_grad_fn
-
+from library.utils.pipeline.basicpipeline import basic_validate, BasicPipeline, get_basic_grad_fn
+from library.utils.trainer.basictrainer import BasicTrainer
 
 BUCKET_SIZE = 6400
 # DATA_DIR = r'/media/webdev/store/competition/bytecup2018/data'
@@ -37,8 +36,8 @@ except KeyError:
 
 class ExtractDataset(JsonFileDataset):
     """
-        文章 -> 抽取索引
-        article sentences -> extraction indices
+        文章 -> 标题
+        article sentences - abstract
         (dataset created by greedily matching ROUGE)
     """
     def __init__(self, split):
@@ -46,7 +45,7 @@ class ExtractDataset(JsonFileDataset):
 
     def __getitem__(self, i):
         js_data = super().__getitem__(i)
-        art_sents, extracts = js_data['article'], js_data['extracted']
+        art_sents, extracts = js_data['article'], js_data['abstract']
         return art_sents, extracts
 
 
@@ -71,7 +70,7 @@ def build_batchers(net_type, word2id, cuda, debug):
     batchify = compose(batchify_fn(PAD, cuda=cuda), convert_batch(UNK, word2id))
 
     train_loader = DataLoader(
-        ExtractDataset('trainer'), batch_size=BUCKET_SIZE,
+        ExtractDataset('train'), batch_size=BUCKET_SIZE,
         shuffle=not debug,
         num_workers=4 if cuda and not debug else 0,
         collate_fn=coll_fn_extract
@@ -108,7 +107,7 @@ def configure_net(net_type, vocab_size, emb_dim, conv_hidden, lstm_hidden, lstm_
         'lstm_layer': lstm_layer,
         'bidirectional': bidirectional
     }
-    net = (FFextExtractSumm(**net_args) if net_type == 'ff' else PtrExtractSumm(**net_args))
+    net = (ExtractSumm(**net_args) if net_type == 'ff' else PtrExtractSumm(**net_args))
     return net, net_args
 
 
@@ -220,7 +219,7 @@ if __name__ == '__main__':
     parser.add_argument('--lr_p', type=int, action='store', default=0, help='patience学习率延迟率')
     parser.add_argument('--clip', type=float, action='store', default=2.0, help='梯度裁剪')
     parser.add_argument('--batch', type=int, action='store', default=32, help='训练批次尺寸')
-    parser.add_argument( '--ckpt_freq', type=int, action='store', default=3000, help='number of update steps for checkpoint and validation')
+    parser.add_argument('--ckpt_freq', type=int, action='store', default=3000, help='number of update steps for checkpoint and validation')
     parser.add_argument('--patience', type=int, action='store', default=5, help='patience for early stopping')
 
     parser.add_argument('--debug', action='store_true', help='run in debugging mode')

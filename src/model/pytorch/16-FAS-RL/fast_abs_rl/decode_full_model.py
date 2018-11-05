@@ -158,7 +158,8 @@ def _compute_score(hyps):
     return (-repeat, lp)
 
 
-# --path=/media/webdev/store/competition/bytecup2018/data/eval --model_dir=/media/webdev/store/competition/bytecup2018/data/pretrained/new --beam=1 --val
+# --path=/media/webdev/store/competition/bytecup2018/data/eval
+# --model_dir=/media/webdev/store/competition/bytecup2018/data/pretrained/new --beam=1 --val
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='run decoding of the full model (RL)')
     parser.add_argument('--path', required=True, help='path to store/eval')

@@ -26,7 +26,11 @@ class JsonFileDataset(Dataset):
         self.FILE_PRE = '{}.json'
         self.split = split
 
-    def __len__(self) -> int: # 必须相应，否则批处理器，不知道加载多少
+    def __len__(self) -> int:
+        """
+            必须相应，否则批处理器，不知道加载多少
+        :return:
+        """
         return self._n_data
 
     # def __getitem__(self, i: int):
@@ -35,13 +39,18 @@ class JsonFileDataset(Dataset):
     #     return zip(df['content'].values, df['title'].values)
 
     def __getitem__(self, i: int):
+        """
+            []的处理，每次返回一个json文件
+        :param i:
+        :return:
+        """
         with open(join(self._data_path, '{}.json'.format(i))) as f:
             js = json.loads(f.read())
         return js
 
     def count_json(self, path):
         """
-            追加的统计文件个数的方法，计算json文件个数
+            数据库是由文件构成，计算json文件个数就是数据库的大小
             count number of data in the given path
         """
         matcher = re.compile(r'[0-9]+\.json')

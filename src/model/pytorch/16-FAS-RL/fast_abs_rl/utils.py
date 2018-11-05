@@ -7,6 +7,7 @@ import gensim
 import torch
 from torch import nn
 
+
 # 数据集 计数
 def count_data(path):
     """ count number of data in the given path"""

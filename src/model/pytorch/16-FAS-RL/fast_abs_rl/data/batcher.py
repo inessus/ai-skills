@@ -12,7 +12,7 @@ import torch.multiprocessing as mp
 # Batching functions
 def coll_fn(data):
     """
-        (callable, optional): merges a list of samples to form a mini-batch.
+        收集函数， (callable, optional): merges a list of samples to form a mini-batch.
         拆包，压成一维，滤0，判优，打包  6400（）
     :param data:
     :return:
@@ -28,7 +28,7 @@ def coll_fn(data):
 
 def coll_fn_extract(data):
     """
-        判优， 过滤，打包
+        DataLoader装载数据集使用， 判优， 过滤，打包
     :param data:
     :return:
     """
