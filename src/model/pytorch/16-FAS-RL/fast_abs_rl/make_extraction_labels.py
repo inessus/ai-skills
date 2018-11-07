@@ -14,8 +14,7 @@ from data.data import JsonFileDataset
 
 
 # DATA_DIR = "/Users/oneai/ai/data/cnndm"
-DATA_DIR = "/Users/oneai/ai/data/bytecup"
-
+DATA_DIR = "/media/webdev/store/competition/cnndm/"
 
 def _split_words(texts):
     return map(lambda t: t.split(), texts)
@@ -89,7 +88,7 @@ def label(split):
 
 
 def main():
-    for split in ['val', 'trainer']:  # no need of extraction label when testing
+    for split in ['val', 'train']:  # no need of extraction label when testing
         label_mp(split)
 
 

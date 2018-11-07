@@ -156,3 +156,11 @@ After the training finishes you will be able to run the decoding and evaluation 
 The above will use the best hyper-parameters we used in the paper as default.
 Please refer to the respective source code for options to set the hyper-parameters.
 
+
+5. install stanford-nlp
+
+```
+export CLASSPATH=/path/to/stanford-corenlp-full-2016-10-31/stanford-corenlp-3.7.0.jar
+echo "Please tokenize this text." | java edu.stanford.nlp.process.PTBTokenizer
+
+```

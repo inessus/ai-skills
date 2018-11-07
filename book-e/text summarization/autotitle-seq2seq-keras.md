@@ -42,3 +42,7 @@ https://www.sohu.com/a/164171974_741733
 https://github.com/qfettes/DeepRL-Tutorials
 
 https://github.com/bharathgs/Awesome-pytorch-list
+
+
+## 语音
+https://mp.weixin.qq.com/s?__biz=MzU2OTA0NzE2NA==&mid=2247501030&idx=1&sn=31fe4c7f596e377afc3a473bbffc84e2&chksm=fc8625f5cbf1ace38f098b1e3d641a66a9618926ffe4a3c11abf549ddf95aeb25b5f99e261bb&mpshare=1&scene=1&srcid=1106ZI8ySL6KDLXhXmums4U7&pass_ticket=5DqZ5iuqL9IIQyVnIs9YctINiUc6SNLtd0WMUZtAtFd6ErQALRAC%2F9EDlux4TVCm#rd
