@@ -13,7 +13,7 @@ try:
 except KeyError:
     print('please use environment variable to specify data directories')
 
-
+DATA_DIR = "'/media/webdev/store/competition/bytecup2018/cnndm"
 def dump(split):
     start = time()
     print('start processing {} split...'.format(split))
