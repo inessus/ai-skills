@@ -15,7 +15,7 @@ from data.data import JsonFileDataset
 class Sentences(object):
     """ needed for gensim word2vec training"""
     def __init__(self, dataset):
-        self._path = join(dataset.path, 'trainer')
+        self._path = join(dataset.path, 'train')
         self._n_data = len(dataset)
 
     def __iter__(self):
@@ -30,8 +30,8 @@ def main(args):
     logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
     start = time()
 
-    # dataset = JsonFileDataset('trainer', 'cnndm', args.path)
-    dataset = JsonFileDataset('trainer', args.path)
+    # dataset = JsonFileDataset('train', 'cnndm', args.path)
+    dataset = JsonFileDataset('train', args.path)
 
     save_dir = join(args.path, "word2vec")
     if not exists(save_dir):
@@ -49,7 +49,9 @@ def main(args):
     print('word2vec trained in {}'.format(timedelta(seconds=time()-start)))
     return model
 
-
+"""
+python 02_train_word2vec.py --path=/media/webdev/store/competition/cnndm
+"""
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='trainer word2vec embedding used for model initialization')
     parser.add_argument('--path', required=True, help='root of the model')

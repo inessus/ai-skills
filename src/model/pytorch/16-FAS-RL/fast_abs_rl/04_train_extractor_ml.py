@@ -31,7 +31,8 @@ from data.batcher import BucketedGenerater
 BUCKET_SIZE = 6400
 
 
-DATA_DIR = r'/Users/oneai/ai/data/cnndm'
+# DATA_DIR = r'/Users/oneai/ai/data/cnndm'
+DATA_DIR = "/media/webdev/store/competition/cnndm/"
 
 
 class ExtractDataset(JsonFileDataset):
@@ -70,7 +71,7 @@ def build_batchers(net_type, word2id, cuda, debug):
     batchify = compose(batchify_fn(PAD, cuda=cuda), convert_batch(UNK, word2id))
 
     train_loader = DataLoader(
-        ExtractDataset('trainer'), batch_size=BUCKET_SIZE,
+        ExtractDataset('train'), batch_size=BUCKET_SIZE,
         shuffle=not debug,
         num_workers=4 if cuda and not debug else 0,
         collate_fn=coll_fn_extract
@@ -195,8 +196,9 @@ def main(args):
     trainer.train()
 
 
-# python train_extractor_ml.py --path=/Users/oneai/ai/data/cnndm/extractor
+# python 04_train_extractor_ml.py --path=/Users/oneai/ai/data/cnndm/extractor
 # --w2v=/Users/oneai/ai/data/cnndm/word2vec/word2vec.128d.226k.bin
+# python 04_train_extractor.py --path=/media/webdev/store/competition/cnndm/extractor --w2v=/media/webdev/store/competition/cnndm/word2vec/word2vec.128d.226k.bin
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='training of the feed-forward extractor (ff-ext, ML)')
     parser.add_argument('--path', required=True, help='root of the model')

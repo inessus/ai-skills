@@ -9,7 +9,67 @@ import tarfile
 import io
 import pickle as pkl
 
-
+"""
+input:
+    8a610f5720b96856df771152f2a9736735695a19.story
+    8a738e6dff859aca5ec507ad2ddcedab4b0bb08d.story
+    8a73acec41c639c89835e3ecc89e5d3a0e730d2f.story
+    ...
+    8a762537bd3a4345bc6756a62db08c0435c032af.story
+    
+    cat 8a610f5720b96856df771152f2a9736735695a19.story
+        ""
+        By 
+        Simon Murphy
+        PUBLISHED:
+        08:23 EST, 16 January 2013
+        | 
+            UPDATED:
+        12:18 EST, 16 January 2013
+        ‘There’s no fence, no sign, no warning you’re about to fall into a hole, just a few traffic cones.’
+        ‘The course held up very well. There was some surface damage but actually we were very pleased with how the course endured such an extreme weather situation. There are two sections impacted because the burn burst its banks.
+        ‘We have a 600-acre golf course which is sand-based and we have exceptional drainage. The pathway has collapsed into the burn.’
+        
+        @highlight
+        The 'bullying' businessman infuriated locals when building the course
+        @highlight
+        Their battle featured in BBC2 documentary You’ve Been Trumped
+        @highlight
+        She said Trump's controversial course had drainage problems%    
+        ""
+output:
+        0.json
+        1.json
+        ...
+        0000.json
+        
+        cat 121.json
+        ""
+        {
+           "id": "9acb288aebea0b1d9c5c49e14cd992f07e34506c",
+           "article": [
+               "by daily mail reporter .",
+               "published : .",
+               "10:40 est , 25 july 2012 .",
+               "| .",
+               "updated : .",
+               "19:51 est , 25 july 2012 .",
+               "when detectives studied his computer , they found he had set up a fictitious circle of friends on facebook -- all of whom he had used to communicate with katie , convincing her they were real .",
+               "the profile pages for dan tress , cyn darwin , shane pleuon and krystal stanguard featured photographs bushby had found online .",
+               "guilty : tony bushby , a teenage karate teacher , has been jailed for a minimum of 25 years after stabbing his girlfriend to death on boxing day as she babysat her niece and nephew .",
+               "he was behind all the characters and they reflected his ` obsessions and interests -lrb- with -rrb- all things dark and evil ' . he even went on to blame one of his creations , dan tress , for katie 's murder .",
+               "bushby denied murder but was convicted by a jury at st alban 's crown court on tuesday .",
+               ......
+               "miss wynter 's mother joy davis told how her world had ` crashed around ' her following the murder of her daughter .",
+           ],
+           "abstract": [
+               "tony bushby , 19 , created fake facebook friends to trick art student catherine wynter into going out with him .",
+               "he stabbed her 23 times as she babysat her niece and nephew on boxing day last year then locked them in the house with her body .",
+               "mother : ` i have been robbed of a future with my daughter '"
+           ],
+        }         
+        ""
+"""
 dm_single_close_quote = '\u2019' # unicode
 dm_double_close_quote = '\u201d'
 # acceptable ways to end a sentence
@@ -221,6 +281,9 @@ def check_num_stories(stories_dir, num_expected):
 
 """
 python make_datafiles.py /media/webdev/store/competition/cnndm/cnn_stories/stories /media/webdev/store/competition/cnndm/dm_stories/stories
+cnn_stories 92580
+dm_stories 219507
+
 """
 if __name__ == '__main__':
     if len(sys.argv) != 3:
