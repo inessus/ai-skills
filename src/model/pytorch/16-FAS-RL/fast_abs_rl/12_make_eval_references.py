@@ -17,6 +17,7 @@ except KeyError:
 # DATA_DIR = "'/media/webdev/store/competition/bytecup2018/cnndm"
 DATA_DIR = "/media/webdev/store/competition/cnndm"
 
+
 def dump(split):
     start = time()
     print('start processing {} split...'.format(split))
