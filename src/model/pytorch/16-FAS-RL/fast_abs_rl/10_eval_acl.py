@@ -5,12 +5,14 @@ from os.path import join, abspath, dirname, exists
 from evaluate import eval_meteor, eval_rouge
 
 
-_REF_DIR = join(abspath(dirname(__file__)), 'acl18_results')
+# _REF_DIR = join(abspath(dirname(__file__)), 'acl18_results')
+_REF_DIR = join('/media/webdev/store/competition/cnndm/refs', 'test')
 
 
 def main(args):
     dec_dir = args.decode_dir
-    ref_dir = join(_REF_DIR, 'reference')
+    # ref_dir = join(_REF_DIR, 'reference')
+    ref_dir = _REF_DIR
     if args.rouge:
         dec_pattern = r'(\d+).dec'
         ref_pattern = '#ID#.ref'
@@ -22,6 +24,7 @@ def main(args):
     print(output)
 
 
+# python eval_acl.py --rouge --decode_dir=/media/webdev/store/competition/cnndm/decode_test/output
 if __name__ == '__main__':
     assert exists(_REF_DIR)
     parser = argparse.ArgumentParser(

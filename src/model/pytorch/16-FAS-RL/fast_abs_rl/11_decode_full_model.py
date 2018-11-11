@@ -60,8 +60,10 @@ def decode(save_path, model_dir, split, batch_size,
     dataset = DecodeDataset(split)
 
     n_data = len(dataset)
+    print("dataset: {} {}".format(split, n_data))
     loader = DataLoader(
         dataset, batch_size=batch_size, shuffle=False, num_workers=4,
+        # dataset, batch_size=batch_size, shuffle=False,
         collate_fn=coll
     )
 
@@ -82,37 +84,48 @@ def decode(save_path, model_dir, split, batch_size,
 
     # Decoding
     i = 0
+
     with torch.no_grad():
-        for i_debug, raw_article_batch in enumerate(loader):
-            tokenized_article_batch = map(tokenize(None), raw_article_batch)
-            ext_arts = []
-            ext_inds = []
-            for raw_art_sents in tokenized_article_batch:
-                ext = extractor(raw_art_sents)[:-1]  # exclude EOE
-                if not ext:
-                    # use top-5 if nothing is extracted
-                    # in some rare cases rnn-ext does not extract at all
-                    ext = list(range(5))[:len(raw_art_sents)]
+        try:
+            for i_debug, raw_article_batch in enumerate(loader):
+                tokenized_article_batch = map(tokenize(None), raw_article_batch)
+                ext_arts = []
+                ext_inds = []
+                for raw_art_sents in tokenized_article_batch:
+                    try:
+                        ext = extractor(raw_art_sents)[:-1]  # exclude EOE
+                        if not ext:
+                            # use top-5 if nothing is extracted
+                            # in some rare cases rnn-ext does not extract at all
+                            ext = list(range(5))[:len(raw_art_sents)]
+                        else:
+                            ext = [i.item() for i in ext]
+                    except:
+                        ext = [0]
+                        pass
+                    # print("ext value {}".format(ext))
+                    ext_inds += [(len(ext_arts), len(ext))]
+                    ext_arts += [raw_art_sents[i] for i in ext]
+                if beam_size > 1:
+                    all_beams = abstractor(ext_arts, beam_size, diverse)
+                    dec_outs = rerank_mp(all_beams, ext_inds)
                 else:
-                    ext = [i.item() for i in ext]
-                ext_inds += [(len(ext_arts), len(ext))]
-                ext_arts += [raw_art_sents[i] for i in ext]
-            if beam_size > 1:
-                all_beams = abstractor(ext_arts, beam_size, diverse)
-                dec_outs = rerank_mp(all_beams, ext_inds)
-            else:
-                dec_outs = abstractor(ext_arts)
-            assert i == batch_size*i_debug
-            for j, n in ext_inds:
-                decoded_sents = [' '.join(dec) for dec in dec_outs[j:j+n]]
-                with open(join(save_path, 'output/{}.dec'.format(i)),
-                          'w') as f:
-                    f.write(make_html_safe('\n'.join(decoded_sents)))
-                i += 1
-                print('{}/{} ({:.2f}%) decoded in {} seconds\r'.format(
-                    i, n_data, i/n_data*100,
-                    timedelta(seconds=int(time()-start))
-                ), end='')
+                    dec_outs = abstractor(ext_arts)
+                # print("error {} {} {}".format(i, batch_size, i_debug))
+                assert i == batch_size*i_debug
+                for j, n in ext_inds:
+                    decoded_sents = [' '.join(dec) for dec in dec_outs[j:j+n]]
+                    with open(join(save_path, 'output/{}.dec'.format(i)),
+                              'w') as f:
+                        f.write(make_html_safe('\n'.join(decoded_sents)))
+                    i += 1
+                    print('{}/{} ({:.2f}%) decoded in {} seconds\r'.format(
+                        i, n_data, i/n_data*100,
+                        timedelta(seconds=int(time()-start))
+                    ), end='')
+        except:
+
+            print("i:{} i_debug:{} j:{} n:{} ext_indes:{}".format(i, i_debug,j, n, ext_inds))
     print()
 
 
@@ -160,6 +173,9 @@ def _compute_score(hyps):
 
 # --path=/Users/oneai/ai/data/cnndm/val
 # --model_dir=/media/webdev/store/competition/bytecup2018/data/pretrained/new --beam=1 --val
+
+# --path=/media/webdev/store/competition/cnndm/decode
+# --model_dir=/media/webdev/store/competition/cnndm/pretrained/new --beam=1 --val
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='run decoding of the full model (RL)')
     parser.add_argument('--path', required=True, help='path to store/eval')

@@ -13,9 +13,10 @@ from torch.optim.lr_scheduler import ReduceLROnPlateau
 from torch.utils.data import DataLoader
 
 
-from training import get_basic_grad_fn, basic_validate
-from training import BasicPipeline, BasicTrainer
-
+# from training import get_basic_grad_fn, basic_validate
+# from training import BasicPipeline, BasicTrainer
+from library.utils.trainer.training import get_basic_grad_fn, basic_validate
+from library.utils.trainer.training import BasicPipeline, BasicTrainer
 from library.utils.datasets.dictionary import make_vocab, PAD, START, UNK, END
 from library.utils.datasets.jsonfile import JsonFileDataset
 from library.utils.datasets.batcher import coll_fn, prepro_token_fn
@@ -179,7 +180,7 @@ def main(args):
         net.set_embedding(embedding)
 
     # 配置训练参数 configure training setting
-    criterion, train_params = configure_training('adam', args.lr, args.clip, args.decay, args.batch)
+    criterion_ch, train_params = configure_training('adam', args.lr, args.clip, args.decay, args.batch)
 
     # save experiment setting
     if not exists(args.path):
@@ -195,7 +196,7 @@ def main(args):
         json.dump(meta, f, indent=4)    # 缩进
 
     # 准备训练
-    val_fn = basic_validate(net, criterion) # 基礎驗證
+    val_fn = basic_validate(net, criterion_ch) # 基礎驗證
     grad_fn = get_basic_grad_fn(net, args.clip)
     optimizer = optim.Adam(net.parameters(), **train_params['optimizer'][1])
     scheduler = ReduceLROnPlateau(optimizer, 'min', verbose=True,
@@ -205,8 +206,11 @@ def main(args):
     if args.cuda:
         net = net.cuda()
     pipeline = BasicPipeline(meta['net'], net,
-                             train_batcher, val_batcher, args.batch, val_fn,
-                             criterion, optimizer, grad_fn)
+                             train_batcher, val_batcher, args.batch,
+                             criterion_ch, optimizer, val_fn=val_fn, grad_fn=grad_fn)
+
+    # def __init__(self, name, net, train_batcher, val_batcher, batch_size, criterion, optim, clip=None, val_fn=None,
+    #               grad_fn=None):
     trainer = BasicTrainer(pipeline, args.path,
                            args.ckpt_freq, args.patience, scheduler)
 

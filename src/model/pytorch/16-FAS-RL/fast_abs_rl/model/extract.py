@@ -40,6 +40,7 @@ class ConvSentEncoder(nn.Module):
         emb_input = self._embedding(input_)
         conv_in = F.dropout(emb_input.transpose(1, 2),
                             self._dropout, training=self.training)
+        # print(input_.size(), conv_in.size())
         output = torch.cat([F.relu(conv(conv_in)).max(dim=2)[0]
                             for conv in self._convs], dim=1)
         return output
@@ -195,7 +196,7 @@ class ExtractSumm(nn.Module):
                 dim=0
             )
         lstm_out = self._art_enc(enc_sent, sent_nums)
-        enc_art = F.tanh(
+        enc_art = torch.tanh(
             self._art_linear(sequence_mean(lstm_out, sent_nums, dim=1)))
         return lstm_out, enc_art
 
@@ -327,7 +328,7 @@ class LSTMPointerNet(nn.Module):
             query, w.unsqueeze(0)
         ).unsqueeze(2)  # [B, Nq, Ns, D]
         score = torch.matmul(
-            F.tanh(sum_), v.unsqueeze(0).unsqueeze(1).unsqueeze(3)
+            torch.tanh(sum_), v.unsqueeze(0).unsqueeze(1).unsqueeze(3)
         ).squeeze(3)  # [B, Nq, Ns]
         return score
 

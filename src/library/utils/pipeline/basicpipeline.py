@@ -142,16 +142,16 @@ class BasicPipeline(object):
         # forward pass of model
         self._net.train()
         fw_args, bw_args = next(self._batches)
-        article, art_lens, abstract, extend_art, extend_vsize = fw_args
-        # net_out = self._net(article, art_lens, abstract, extend_art, extend_vsize) # [B,T',V']
+
         net_out = self._net(*fw_args) # [B,T',V']
 
         # get logs and output for logging, backward
         log_dict = {}
-        # loss_args = self.get_loss_args(net_out, bw_args)
+        loss_args = self.get_loss_args(net_out, bw_args)
 
         # backward and update ( and optional gradient monitoring )
-        loss = self._criterion(net_out, bw_args).mean()
+        loss = self._criterion(*loss_args).mean()
+
         loss.backward()
         log_dict['loss'] = loss.item()
         # log_dict['input'] = fw_args

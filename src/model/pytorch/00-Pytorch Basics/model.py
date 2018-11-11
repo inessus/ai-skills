@@ -19,7 +19,7 @@ if __name__ == "__main__":
 
     F.relu6()
     F.sigmoid()
-    F.tanh()
+    torch.tanh()
     F.softplus
     F.softplus
     F.softmax()

@@ -135,7 +135,7 @@ class LSTMPointerNet(nn.Module):
             query, w.unsqueeze(0)
         ).unsqueeze(2)  # [B, Nq, Ns, D]
         score = torch.matmul(
-            F.tanh(sum_), v.unsqueeze(0).unsqueeze(1).unsqueeze(3)
+            torch.tanh(sum_), v.unsqueeze(0).unsqueeze(1).unsqueeze(3)
         ).squeeze(3)  # [B, Nq, Ns]
         return score
 
@@ -249,7 +249,7 @@ class ExtractSumm(nn.Module):
                 dim=0
             )
         lstm_out = self._art_enc(enc_sent, sent_nums)
-        enc_art = F.tanh(
+        enc_art = torch.tanh(
             self._art_linear(sequence_mean(lstm_out, sent_nums, dim=1)))
         return lstm_out, enc_art
 
