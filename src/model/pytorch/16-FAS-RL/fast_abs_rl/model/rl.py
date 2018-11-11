@@ -73,7 +73,7 @@ class PtrExtractorRL(nn.Module):
     def attention_score(attention, query, v, w):
         """ unnormalized attention score"""
         sum_ = attention + torch.mm(query, w)
-        score = torch.mm(F.tanh(sum_), v.unsqueeze(1)).t()
+        score = torch.mm(torch.tanh(sum_), v.unsqueeze(1)).t()
         return score
 
     @staticmethod
@@ -195,7 +195,7 @@ class PtrScorer(nn.Module):
     def attention(attention, attention_feat, query, v, w):
         """ attention context vector"""
         sum_ = attention_feat + torch.mm(query, w)
-        score = F.softmax(torch.mm(F.tanh(sum_), v.unsqueeze(1)).t(), dim=-1)
+        score = F.softmax(torch.mm(torch.tanh(sum_), v.unsqueeze(1)).t(), dim=-1)
         output = torch.mm(score, attention)
         return output
 

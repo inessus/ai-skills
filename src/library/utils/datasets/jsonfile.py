@@ -17,7 +17,8 @@ class JsonFileDataset(Dataset):
 
         self.path = path # 源路径
         self._data_path = join(self.path, split) # 数据路径
-        self._n_data = self.count_json(self._data_path)
+        # self._n_data = self.count_json(self._data_path)
+        self._n_data = 1261739
 
         self.FILE_PRE = '{}.json'
         self.split = split

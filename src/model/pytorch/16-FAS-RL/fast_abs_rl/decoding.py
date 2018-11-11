@@ -18,7 +18,7 @@ from data.batcher import conver2id, pad_batch_tensorize
 from data.data import JsonFileDataset
 
 # DATASET_DIR = r'/Users/oneai/ai/data/cnndm'
-DATASET_DIR = r"/media/webdev/store/competition/bytecup2018/data/"
+DATASET_DIR = r"/media/webdev/store/competition/cnndm/"
 
 
 class DecodeDataset(JsonFileDataset):
