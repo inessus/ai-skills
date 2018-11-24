@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # ai-skills
 DBA ai skills
 =======
@@ -168,4 +167,3 @@ should currently follow the cocoApi for now.
 ## License
 
 maskrcnn-benchmark is released under the MIT license. See [LICENSE](LICENSE) for additional details.
->>>>>>> 8323c118d4eed03530af605f48fe6a420b54ad98
