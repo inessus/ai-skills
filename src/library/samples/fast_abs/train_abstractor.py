@@ -6,6 +6,7 @@ from os.path import join, exists
 import pickle as pkl
 from cytoolz import compose
 
+
 import torch
 from torch import optim
 from torch.nn import functional as F
@@ -13,8 +14,8 @@ from torch.optim.lr_scheduler import ReduceLROnPlateau
 from torch.utils.data import DataLoader
 
 
-# from training import get_basic_grad_fn, basic_validate
-# from training import BasicPipeline, BasicTrainer
+import sys
+sys.path.append("../../..")
 from library.utils.trainer.training import get_basic_grad_fn, basic_validate
 from library.utils.trainer.training import BasicPipeline, BasicTrainer
 from library.utils.datasets.dictionary import make_vocab, PAD, START, UNK, END

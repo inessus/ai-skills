@@ -11,6 +11,9 @@ from torch.nn import functional as F
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 from torch.utils.data import DataLoader
 
+
+import sys
+sys.path.append("../../..")
 from library.utils.datasets.dictionary import PAD, UNK, make_vocab
 from library.utils.datasets.jsonfile import JsonFileDataset
 from library.utils.datasets.batcher import coll_fn_extract, prepro_fn_extract
@@ -27,6 +30,7 @@ from library.utils.trainer.basictrainer import BasicTrainer
 
 BUCKET_SIZE = 6400
 # DATA_DIR = r'/media/webdev/store/competition/bytecup2018/data'
+
 
 try:
     DATA_DIR = os.environ['DATA']

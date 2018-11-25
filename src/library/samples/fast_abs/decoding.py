@@ -8,16 +8,19 @@ from os.path import join
 from itertools import starmap
 from cytoolz import curry
 
+
 import sys
 sys.path.append("../../..")
+
 from library.utils.datasets.dictionary import PAD, UNK, START, END
 from library.text.modules.copynet import CopySumm
-from library.text.modules.ffext import ExtractSumm
 from library.text.modules.ptrext import PtrExtractSumm
+from library.text.modules.ffext import ExtractSumm
+from library.text.modules.rl import ActorCritic
 
-from model.rl import ActorCritic
-from data.batcher import conver2id, pad_batch_tensorize
-from data.data import JsonFileDataset
+from library.utils.datasets.batcher import conver2id, pad_batch_tensorize
+from library.utils.datasets.jsonfile import JsonFileDataset
+
 
 # DATASET_DIR = r'/Users/oneai/ai/data/cnndm'
 DATASET_DIR = r"/media/webdev/store/competition/cnndm/"

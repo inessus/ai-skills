@@ -76,7 +76,7 @@ def count_train_txt(path):
         计算txt文件个数
         count number of data in the given path
     """
-    matcher = re.compile(r'.*trainer.[0-9]+\.txt')
+    matcher = re.compile(r'.*train.[0-9]+\.txt')
     match = lambda name: bool(matcher.match(name))
     names = os.listdir(path)
     n_data = len(list(filter(match, names)))
@@ -84,7 +84,7 @@ def count_train_txt(path):
 
 
 def convert_p2j(src_path, dest_path, voc_path=""):
-    path = "/home/webdev/ai/competition/bytecup2018/data/trainer/"
+    path = "/home/webdev/ai/competition/bytecup2018/data/train/"
     raw_path = "/home/webdev/ai/competition/bytecup2018/data/raw"
     
     iCount = 0

@@ -153,7 +153,8 @@ def run_main():
 
             with torch.no_grad():
                 var_input = input_samples.cuda()
-                var_gt = gt_samples.cuda(async=True)
+                # var_gt = gt_samples.cuda(async=True)
+                var_gt = gt_samples.cuda()
 
                 preds = model(var_input)
                 loss = mt_losses.dice_loss(preds, var_gt)

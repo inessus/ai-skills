@@ -9,7 +9,7 @@ from library.vision.modules.resnet import ResNet,ResidualBlock
 from library.utils.pipeline.basicpipeline import BasicPipeline
 from library.utils.trainer.basictrainer import BasicTrainer
 
-torch.utils.data.TensorDataset
+
 def build_batchers(batch):
     # 下载训练集 MNIST 手写数字训练集
 

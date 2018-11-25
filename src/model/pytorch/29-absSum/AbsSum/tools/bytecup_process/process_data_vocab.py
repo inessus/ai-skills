@@ -4,11 +4,13 @@ import sys
 import glob
 import json
 
+
 def show_progress(a, b, time=""):
     cc = int(round(100.0*float(a)/float(b)))
     dstr = '[' + '>'*cc + ' '*(100-cc) + ']'
     sys.stdout.write(dstr + str(cc) + '%' + time +'\r')
     sys.stdout.flush()
+
 
 print('read split ...')
 train_id = {}
