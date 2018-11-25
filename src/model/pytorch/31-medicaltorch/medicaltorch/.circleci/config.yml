@@ -1,0 +1,47 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/python:3.6.1
+      
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "requirements.txt" }}
+          - v1-dependencies-
+
+      # To be used later to download sample data for tests
+      # - run: ./misc/download_testdata.sh
+
+      - run:
+          name: install dependencies
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install --upgrade pip
+            #pip install -r requirements.txt -r test-requirements.txt 
+            pip install .
+
+      - save_cache:
+          paths:
+            - ./venv
+          key: v1-dependencies-{{ checksum "requirements.txt" }}
+        
+      - run:
+          name: run tests
+          command: |
+            . venv/bin/activate
+            mkdir test-reports
+            # Skip other tests for the moment, only run test_models.
+            pytest -v --junitxml=test-reports/junit.xml tests/test_models.py
+
+      - store_artifacts:
+          path: test-reports
+          destination: test-reports
+
+      - store_test_results:
+          path: test-reports
