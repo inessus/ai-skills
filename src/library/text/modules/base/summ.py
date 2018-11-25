@@ -5,8 +5,12 @@ from torch.nn import init
 from .rnn import lstm_encoder
 from .rnn import MultiLayerLSTMCells
 from .attention import step_attention
-from .util import sequence_mean, len_mask
+# from .util import sequence_mean, len_mask
 
+
+import sys
+sys.path.append("../../../../")
+from library.utils.transforms.sequence import sequence_mean, len_mask
 
 INIT = 1e-2
 
@@ -33,8 +37,6 @@ class Seq2SeqSumm(nn.Module):
         state_layer = n_layer * (2 if bidirectional else 1)
         self._init_enc_h = nn.Parameter(torch.Tensor(state_layer, n_hidden))    # ((2*L)*N) (2*256)
         self._init_enc_c = nn.Parameter(torch.Tensor(state_layer, n_hidden))    # ((2*L)*N) (2*256)
-        init.uniform_(self._init_enc_h, -INIT, INIT)
-        init.uniform_(self._init_enc_c, -INIT, INIT)
 
         # vanillat lstm / LNlstm
         self._dec_lstm = MultiLayerLSTMCells(2*emb_dim, n_hidden, n_layer, dropout=dropout) # (2*E,N,L)(2*128, 256, 1)
@@ -47,8 +49,6 @@ class Seq2SeqSumm(nn.Module):
         # multiplicative attention
         self._attn_wm = nn.Parameter(torch.Tensor(enc_out_dim, n_hidden))   # (512, 256)
         self._attn_wq = nn.Parameter(torch.Tensor(n_hidden, n_hidden))      # (256, 256)
-        init.xavier_normal_(self._attn_wm)
-        init.xavier_normal_(self._attn_wq)
 
         # project decoder output to emb_dim, then
         # apply weight matrix from embedding layer
@@ -62,6 +62,13 @@ class Seq2SeqSumm(nn.Module):
             self._embedding, self._dec_lstm,
             self._attn_wq, self._projection
         )
+        self.init()
+
+    def init(self):
+        init.uniform_(self._init_enc_h, -INIT, INIT)
+        init.uniform_(self._init_enc_c, -INIT, INIT)
+        init.xavier_normal_(self._attn_wm)
+        init.xavier_normal_(self._attn_wq)
 
     def forward(self, article, art_lens, abstract):
         # [128*32*256], ( [(1*128*256),(1*128*256)],(256*128))

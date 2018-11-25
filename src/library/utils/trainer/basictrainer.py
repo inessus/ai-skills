@@ -56,7 +56,7 @@ class BasicTrainer(object):
             self._running_loss), end="")
         # sys.stdout.flush()
         try:
-            self._logger.add_graph(self._pipeline.net, (input,))
+            self._logger.add_graph(self._pipeline.net, *input)
         except:
             pass
         for key, value in log_dict.items():

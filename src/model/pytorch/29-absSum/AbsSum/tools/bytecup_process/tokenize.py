@@ -6,6 +6,7 @@ import json
 import argparse
 from multiprocessing import Pool
 
+
 def process_data(input_):
     article = input_['content']
     title = input_['title']

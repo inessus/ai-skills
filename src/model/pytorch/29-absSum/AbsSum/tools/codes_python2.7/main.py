@@ -84,7 +84,7 @@ vocab2id, id2vocab = construct_vocab(
     max_size=opt.vocab_size,
     mincount=opt.word_mincount
 )
-print 'The vocabulary size: {0}'.format(len(vocab2id))
+print('The vocabulary size: {0}'.format(len(vocab2id)))
 src_vocab2id = vocab2id
 src_id2vocab = id2vocab
 if not opt.shared_embedding:
@@ -93,7 +93,7 @@ if not opt.shared_embedding:
         max_size=opt.src_vocab_size,
         mincount=opt.src_word_mincount
     )
-    print 'The vocabulary size: {0}'.format(len(src_vocab2id))
+    print('The vocabulary size: {0}'.format(len(src_vocab2id)))
 
 if opt.task == 'train' or opt.task == 'validate' or opt.task == 'beam':
     model = Seq2Seq(
@@ -116,7 +116,7 @@ if opt.task == 'train' or opt.task == 'validate' or opt.task == 'beam':
         attn_decoder=opt.attn_decoder,
         share_emb_weight=opt.share_emb_weight
     ).cuda()
-    print model
+    print(model)
 '''
 train
 '''
@@ -156,7 +156,7 @@ if opt.task == 'train':
             file_=opt.file_corpus,
             batch_size=opt.batch_size
         )
-        print 'The number of batches: {0}'.format(n_batch)
+        print('The number of batches: {0}'.format(n_batch))
         for batch_id in range(n_batch):
             if cclb == 0 and batch_id <= uf_model[1]:
                 continue
@@ -240,13 +240,13 @@ if opt.task == 'train':
                     sen_pred = [id2vocab[x] if x in id2vocab else ext_id2oov[x] for x in word_prob[0]]
                 else:
                     sen_pred = [id2vocab[x] for x in word_prob[0]]
-                print 'epoch={0}, batch={1}, loss={2}, loss_cv={3}, time_escape={4}s={5}h'.format(
+                print('epoch={0}, batch={1}, loss={2}, loss_cv={3}, time_escape={4}s={5}h'.format(
                     epoch, batch_id, 
                     loss.data.cpu().numpy()[0], 
                     loss_cv.data.cpu().numpy()[0],
                     end_time-start_time, (end_time-start_time)/3600.0
-                )
-                print ' '.join(sen_pred)
+                ))
+                print(' '.join(sen_pred))
             if opt.debug:
                 break
             del logits, attn_, p_gen, loss_cv, loss
@@ -296,7 +296,7 @@ if opt.task == 'validate':
                 file_=opt.file_val,
                 batch_size=opt.batch_size
             )
-            print 'The number of batches (test): {0}'.format(val_batch)
+            print('The number of batches (test): {0}'.format(val_batch))
             if opt.val_num_batch > val_batch:
                 opt.val_num_batch = val_batch
             for batch_id in range(opt.val_num_batch):
@@ -352,14 +352,14 @@ if opt.task == 'validate':
                 loss = loss + loss_cv
                 losses.append(loss.data.cpu().numpy()[0])
                 if batch_id%10 == 0:
-                    print batch_id,
+                    print(batch_id,)
                 del logits, attn_, p_gen, loss_cv, loss
             print
             losses = np.array(losses)
             end_time = time.time()
             best_arr.append([fl_, np.average(losses), end_time-start_time])
             for itm in best_arr[:opt.nbestmodel]:
-                print 'model={0}, loss={1}, time={2}'.format(itm[0], itm[1], itm[2])
+                print('model={0}, loss={1}, time={2}'.format(itm[0], itm[1], itm[2]))
             
             best_arr = sorted(best_arr, key=lambda bb: bb[1])
             for itm in best_arr[opt.nbestmodel:]:
@@ -384,7 +384,7 @@ if opt.task == 'beam':
         file_=opt.file_test,
         batch_size=opt.batch_size
     )
-    print 'The number of batches (test): {0}'.format(test_batch)
+    print('The number of batches (test): {0}'.format(test_batch))
     
     model.load_state_dict(torch.load(
         os.path.join(opt.data_dir, opt.model_dir, opt.model_file+'.model')))
