@@ -5,10 +5,9 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-from wordcloud import WordCloud
 import warnings
 
-
+from wordcloud import WordCloud
 from sklearn.manifold import TSNE
 from sklearn.decomposition import TruncatedSVD
 from sklearn.decomposition import FastICA
@@ -16,7 +15,9 @@ from sklearn.decomposition import PCA
 from sklearn.random_projection import GaussianRandomProjection
 from sklearn.random_projection import SparseRandomProjection
 from matplotlib.ticker import NullFormatter
-from scipy.stats import spearmanr
+from scipy.stats import spearmanr,norm
+from sklearn.preprocessing import StandardScaler
+from scipy import stats
 
 import plotly.offline as py
 py.init_notebook_mode(connected=True)
