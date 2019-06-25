@@ -705,9 +705,15 @@ def all_method(total_df, train_idx, test_idx, target_col):
     return components_df
 
 
+def exploration_one():
+
+    train_df = pd.read_csv("/Users/oneai/ai/data/exploration/train.csv")
+    pass
+
+
 if __name__ == "__main__":
-    train_df = pd.read_json('../input/trainer.json')
-    test_df = pd.read_json('../input/test.json')
+    # train_df = pd.read_json('../input/trainer.json')
+    # test_df = pd.read_json('../input/test.json')
     # col_count_hue_plot(train_df, 'bedrooms', 'interest_level')
     # col_scatter_plot(train_df, 'price')
     # trim_col_hist_plot(train_df, 'latitude')
@@ -719,3 +725,4 @@ if __name__ == "__main__":
     # word_cloud_plot(train_df, 'display_address')
     # # word_cloud_plot(train_df, 'features')
     # word_cloud_plot_v1(train_df, 'display_address')
+    exploration_one()
