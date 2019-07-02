@@ -713,8 +713,13 @@ def exploration_one():
 
 
 if __name__ == "__main__":
+<<<<<<< HEAD
     # train_df = pd.read_json('../input/trainer.json')
     # test_df = pd.read_json('../input/test.json')
+=======
+    train_df = pd.read_json('../input/trainer.json')
+    test_df = pd.read_json('../input/test.json')
+>>>>>>> f9094cbfa00d6dbf91123404ab357f6e212559f2
     # col_count_hue_plot(train_df, 'bedrooms', 'interest_level')
     # col_scatter_plot(train_df, 'price')
     # trim_col_hist_plot(train_df, 'latitude')
