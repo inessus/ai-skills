@@ -5,11 +5,10 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-from wordcloud import WordCloud
 import warnings
 import operator
 
-
+from wordcloud import WordCloud
 from sklearn.manifold import TSNE
 from sklearn.decomposition import TruncatedSVD
 from sklearn.decomposition import FastICA
@@ -17,7 +16,9 @@ from sklearn.decomposition import PCA
 from sklearn.random_projection import GaussianRandomProjection
 from sklearn.random_projection import SparseRandomProjection
 from matplotlib.ticker import NullFormatter
-from scipy.stats import spearmanr
+from scipy.stats import spearmanr,norm
+from sklearn.preprocessing import StandardScaler
+from scipy import stats
 
 import plotly.offline as py
 py.init_notebook_mode(connected=True)
@@ -711,9 +712,20 @@ def all_method(total_df, train_idx, test_idx, target_col):
     return components_df
 
 
+def exploration_one():
+
+    train_df = pd.read_csv("/Users/oneai/ai/data/exploration/train.csv")
+    pass
+
+
 if __name__ == "__main__":
+<<<<<<< HEAD
+    # train_df = pd.read_json('../input/trainer.json')
+    # test_df = pd.read_json('../input/test.json')
+=======
     train_df = pd.read_json('../input/trainer.json')
     test_df = pd.read_json('../input/test.json')
+>>>>>>> f9094cbfa00d6dbf91123404ab357f6e212559f2
     # col_count_hue_plot(train_df, 'bedrooms', 'interest_level')
     # col_scatter_plot(train_df, 'price')
     # trim_col_hist_plot(train_df, 'latitude')
@@ -725,3 +737,4 @@ if __name__ == "__main__":
     # word_cloud_plot(train_df, 'display_address')
     # # word_cloud_plot(train_df, 'features')
     # word_cloud_plot_v1(train_df, 'display_address')
+    exploration_one()
